@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { queryOne, query } from "@/lib/db/pool";
 import { sha256, hashPassword } from "@/lib/auth/crypto";
 import { createSession, setSessionCookie } from "@/lib/auth/session";
@@ -114,11 +114,12 @@ export async function POST(req: NextRequest) {
     const token = await createSession(userId);
     await setSessionCookie(token);
 
+    const invited = invite != null;
     return NextResponse.json({
       message: "注册成功",
       userId,
-      invited: true,
-      inviteType: invite.type,
+      invited,
+      ...(invite ? { inviteType: invite.type } : {}),
     });
   } catch (err) {
     if (err instanceof Error && err.name === "ZodError") {
