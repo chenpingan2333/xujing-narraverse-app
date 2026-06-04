@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "antd";
+import BottomNav from "../components/navigation/BottomNav";
 
 export default function HomePage() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function HomePage() {
   };
 
   return (
+            <>
     <div style={{
       height: "100vh", display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
@@ -124,5 +126,7 @@ export default function HomePage() {
         选择角色 · 进入世界 · 书写你的故事
       </p>
     </div>
+      <BottomNav />
+    </>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import BackButton from "../../components/navigation/BackButton";
+import BottomNav from "../../components/navigation/BottomNav";
 import { Layout, Typography, Button, Tag, Row, Col, message as antMsg, Modal } from "antd";
 import { CrownOutlined, ArrowLeftOutlined, CheckOutlined, StarOutlined, WalletOutlined } from "@ant-design/icons";
 import { MEMBERSHIP_PRICES, ECONOMY, formatCNY, formatMonthlyCNY } from "@/config/economy";
@@ -91,10 +93,10 @@ export default function MembershipPage() {
   const hasEverPurchased = user?.firstVipPurchaseAt != null;
 
   return (
-    <Content style={{ maxWidth: 960, margin: "0 auto", padding: "20px 16px", minHeight: "100vh", paddingBottom: 40 }} className="page-scroll">
+    <>
+    <Content className="page-scroll" style={{ maxWidth: 960, margin: "0 auto", padding: "20px 16px 100px", minHeight: "100vh" }}>
       <div style={{ marginBottom: 32, display: "flex", alignItems: "center", gap: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} type="text" onClick={() => router.push("/profile")}
-          style={{ color: "#B08968" }}>返回</Button>
+        <BackButton />
         <div style={{ flex: 1 }}>
           <Title level={2} style={{
             margin: 0, color: "#5C4033", fontWeight: 400,
@@ -243,5 +245,7 @@ export default function MembershipPage() {
         </Button>
       </Modal>
     </Content>
+      <BottomNav />
+    </>
   );
 }

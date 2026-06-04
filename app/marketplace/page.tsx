@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import BackButton from "../../components/navigation/BackButton";
+import BottomNav from "../../components/navigation/BottomNav";
 import { Layout, Card, Typography, Button, Tag, Row, Col, Avatar, Input, message as antMsg } from "antd";
 import { ArrowLeftOutlined, ShoppingCartOutlined, FireOutlined, StarOutlined, CrownOutlined } from "@ant-design/icons";
 
@@ -56,10 +58,10 @@ export default function MarketplacePage() {
   };
 
   return (
-    <Content style={{ maxWidth: 900, margin: "0 auto", padding: "20px 16px", minHeight: "100vh" }} className="page-scroll">
+    <>
+    <Content className="page-scroll" style={{ maxWidth: 900, margin: "0 auto", padding: "20px 16px 100px", minHeight: "100vh" }}>
       <div style={{ display: "flex", alignItems: "center", marginBottom: 24, gap: 12 }}>
-        <Button icon={<ArrowLeftOutlined />} type="text" onClick={() => router.push("/")}
-          style={{ color: "#B08968" }} />
+        <BackButton />
         <Title level={4} style={{
           margin: 0, color: "#5C4033", fontWeight: 400, flex: 1,
           fontFamily: "'Georgia','Noto Serif SC',serif", letterSpacing: 3,
@@ -181,5 +183,7 @@ export default function MarketplacePage() {
         </div>
       )}
     </Content>
+      <BottomNav />
+    </>
   );
 }

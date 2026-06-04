@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import BackButton from "../../components/navigation/BackButton";
+import BottomNav from "../../components/navigation/BottomNav";
 import { Layout, Typography, Button, Tag, Row, Col, Modal, Input, message as antMsg } from "antd";
 import { ArrowLeftOutlined, CopyOutlined, WalletOutlined, WechatOutlined, AlipayCircleOutlined } from "@ant-design/icons";
 import { RECHARGE_PACKAGES, ECONOMY, formatCNY } from "@/config/economy";
@@ -46,10 +48,10 @@ export default function RechargePage() {
   };
 
   return (
-    <Content style={{ maxWidth: 600, margin: "0 auto", padding: "20px 16px", minHeight: "100vh", paddingBottom: 60 }} className="page-scroll">
+    <>
+    <Content className="page-scroll" style={{ maxWidth: 600, margin: "0 auto", padding: "20px 16px 100px", minHeight: "100vh" }}>
       <div style={{ display: "flex", alignItems: "center", marginBottom: 24, gap: 12 }}>
-        <Button icon={<ArrowLeftOutlined />} type="text" onClick={() => router.push("/profile")}
-          style={{ color: "#B08968" }} />
+        <BackButton />
         <Title level={4} style={{ margin: 0, color: "#5C4033", fontWeight: 400, flex: 1,
           fontFamily: "'Georgia','Noto Serif SC',serif", letterSpacing: 3 }}>
           充值星钻
@@ -183,5 +185,7 @@ export default function RechargePage() {
         </Text>
       </Modal>
     </Content>
+      <BottomNav />
+    </>
   );
 }

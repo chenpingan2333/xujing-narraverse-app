@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import BottomNav from "../../components/navigation/BottomNav";
 import { Layout, Input, Button, Typography, Space, message } from "antd";
 import { LockOutlined, SendOutlined } from "@ant-design/icons";
 
@@ -57,13 +58,14 @@ function InviteWaitingInner() {
 
   if (checking) {
     return (
-      <Layout style={{ minHeight: "100vh", background: "#fffaf5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <Layout style={{ minHeight: "100vh", background: "#fffaf5", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Text style={{ color: "#B08968", fontSize: 14 }}>正在验证……</Text>
       </Layout>
     );
   }
 
   return (
+    <>
     <Layout style={{ minHeight: "100vh", background: "#fffaf5" }}>
       <Content style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
         <div style={{ maxWidth: 420, width: "100%", textAlign: "center" }}>
@@ -124,6 +126,8 @@ function InviteWaitingInner() {
         </div>
       </Content>
     </Layout>
+      <BottomNav />
+    </>
   );
 }
 
@@ -138,3 +142,4 @@ export default function InviteWaitingPage() {
     </Suspense>
   );
 }
+

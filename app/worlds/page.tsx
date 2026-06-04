@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Layout, Card, Typography, Button, Tag, Row, Col } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import BackButton from "../../components/navigation/BackButton";
+import BottomNav from "../../components/navigation/BottomNav";
 
 const { Title, Text, Paragraph } = Typography;
 const { Content } = Layout;
@@ -63,10 +65,10 @@ function WorldsPageInner() {
   };
 
   return (
-    <Content style={{ maxWidth: 960, margin: "0 auto", padding: 32, minHeight: "100vh" }}>
+    <>
+    <Content className="page-scroll" style={{ maxWidth: 960, margin: "0 auto", padding: "20px 16px 100px", minHeight: "100vh" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-        <Button icon={<ArrowLeftOutlined />} type="text" onClick={() => router.push("/characters")}
-          style={{ color: "#B08968" }}>返回</Button>
+        <BackButton />
         <Title level={2} style={{ margin: 0, color: "#5C4033", fontWeight: 400, fontFamily: "'Georgia','Noto Serif SC',serif", letterSpacing: 4 }}>
           世界故事
         </Title>
@@ -131,6 +133,8 @@ function WorldsPageInner() {
         </Row>
       )}
     </Content>
+      <BottomNav />
+    </>
   );
 }
 

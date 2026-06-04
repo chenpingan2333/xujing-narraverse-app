@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import BottomNav from "../../components/navigation/BottomNav";
 import { Layout, Input, Button, Card, Typography, Tag, Drawer, List, Avatar, Badge } from "antd";
 import {
   SendOutlined, UserOutlined, RobotOutlined, MenuOutlined,
