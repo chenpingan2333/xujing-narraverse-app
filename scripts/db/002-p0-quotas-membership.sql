@@ -1,4 +1,4 @@
-﻿-- 叙境 Narraverse — P0: User quotas, membership tiers, memory tiers
+-- 叙境 Narraverse — P0: User quotas, membership tiers, memory tiers
 -- Migration v2.0
 
 -- ── Extend users table ──────────────────────────────────────

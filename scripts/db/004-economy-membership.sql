@@ -1,13 +1,13 @@
--- 叙境 Narraverse — Economy + Membership v4.0
+-- 鍙欏 Narraverse 鈥?Economy + Membership v4.0
 
--- ── First VIP purchase tracking ──────────────────────────
+-- 鈹€鈹€ First VIP purchase tracking 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 ALTER TABLE users ADD COLUMN IF NOT EXISTS first_vip_purchase_at TIMESTAMPTZ;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS uid_display TEXT;
 
 -- Generate display UIDs for existing users
-UPDATE users SET uid_display = 'NAR_' || LPAD(ROW_NUMBER() OVER (ORDER BY created_at)::TEXT, 6, '0') WHERE uid_display IS NULL;
+UPDATE users u SET uid_display = sub.uid_display FROM (SELECT id, 'NAR_' || LPAD(ROW_NUMBER() OVER (ORDER BY created_at)::TEXT, 6, '0') AS uid_display FROM users WHERE uid_display IS NULL) sub WHERE u.id = sub.id;
 
--- ── Membership history ────────────────────────────────────
+-- 鈹€鈹€ Membership history 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 CREATE TABLE IF NOT EXISTS user_memberships (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS user_memberships (
 
 CREATE INDEX idx_memberships_user ON user_memberships(user_id);
 
--- ── Admin wallet operations log ───────────────────────────
+-- 鈹€鈹€ Admin wallet operations log 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 CREATE TABLE IF NOT EXISTS admin_wallet_ops (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   admin_id UUID NOT NULL REFERENCES users(id),
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS admin_wallet_ops (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- ── Recharge orders (manual fulfillment) ──────────────────
+-- 鈹€鈹€ Recharge orders (manual fulfillment) 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 CREATE TABLE IF NOT EXISTS recharge_orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id),

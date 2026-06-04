@@ -37,9 +37,9 @@ function buildGateway(): ProviderGateway {
 }
 
 const DEFAULT_CHARACTERS: Record<string, { name: string; persona: string }> = {
-  "char-001": { name: "艾琳", persona: "温柔体贴的邻家女孩，喜欢分享日常生活中的小确幸" },
-  "char-002": { name: "雷恩", persona: "勇敢正直的冒险者，总能在危险中保护你" },
-  "char-003": { name: "墨夜", persona: "神秘高冷的剑客，话不多但每句都有深意" },
+  "char-001": { name: "鑹剧惓", persona: "娓╂煍浣撹创鐨勯偦瀹跺コ瀛╋紝鍠滄鍒嗕韩鏃ュ父鐢熸椿涓殑灏忕‘骞? },
+  "char-002": { name: "闆锋仼", persona: "鍕囨暍姝ｇ洿鐨勫啋闄╄€咃紝鎬昏兘鍦ㄥ嵄闄╀腑淇濇姢浣? },
+  "char-003": { name: "澧ㄥ", persona: "绁炵楂樺喎鐨勫墤瀹紝璇濅笉澶氫絾姣忓彞閮芥湁娣辨剰" },
 };
 
 function sanitizeError(err: unknown): string {
@@ -47,31 +47,34 @@ function sanitizeError(err: unknown): string {
     const msg = err.message;
     // Provider / auth failures
     if (/provider|api.?key|401|403|unauthoriz|forbidden/i.test(msg))
-      return "AI 服务暂时不可用，请稍后重试";
+      return "AI 鏈嶅姟鏆傛椂涓嶅彲鐢紝璇风◢鍚庨噸璇?;
     // Crypto / key management failures
     if (/encrypt|decrypt|key/i.test(msg))
-      return "系统配置错误，请联系管理员";
-    // Leaked stack traces or filesystem paths — replace with generic
+      return "绯荤粺閰嶇疆閿欒锛岃鑱旂郴绠＄悊鍛?;
+    // Leaked stack traces or filesystem paths 鈥?replace with generic
     if (/at\s+(async\s+)?\S+\s+\(.+:\d+:\d+\)|\\src\\|\\node_modules\\|\/src\/|\/node_modules\//.test(msg))
-      return "服务异常，请稍后重试";
-    return "服务异常，请稍后重试";
+      return "鏈嶅姟寮傚父锛岃绋嶅悗閲嶈瘯";
+    return "鏈嶅姟寮傚父锛岃绋嶅悗閲嶈瘯";
   }
-  return "服务异常，请稍后重试";
+  return "鏈嶅姟寮傚父锛岃绋嶅悗閲嶈瘯";
 }
 
-export async function POST(req: NextRequest) {
+
+export async function GET() {
+  return NextResponse.json({ ok: true });
+}export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { userId, characterId, message, sessionId, isVip, characterTier, worldId, worldTier, worldType } = body;
 
     if (!userId || !characterId || !message) {
-      return NextResponse.json({ error: "请填写必要信息" }, { status: 400 });
+      return NextResponse.json({ error: "璇峰～鍐欏繀瑕佷俊鎭? }, { status: 400 });
     }
     if (typeof message !== "string" || message.length === 0) {
-      return NextResponse.json({ error: "消息不能为空" }, { status: 400 });
+      return NextResponse.json({ error: "娑堟伅涓嶈兘涓虹┖" }, { status: 400 });
     }
     if (message.length > 4000) {
-      return NextResponse.json({ error: "消息过长，请精简后重试" }, { status: 400 });
+      return NextResponse.json({ error: "娑堟伅杩囬暱锛岃绮剧畝鍚庨噸璇? }, { status: 400 });
     }
 
     // Auth: override userId from session (prevents client-side spoofing)
@@ -87,8 +90,8 @@ export async function POST(req: NextRequest) {
 
 
 
-    // ── Onboarding: check first-time state ──
-    // ── P0-2: Ad trigger check ──
+    // 鈹€鈹€ Onboarding: check first-time state 鈹€鈹€
+    // 鈹€鈹€ P0-2: Ad trigger check 鈹€鈹€
     const adWatched = body._adWatched === true;
     if (!adWatched) {
       const needsAd = await userQuotaService.needsAdForConversation(effectiveUserId, effectiveIsVip);
@@ -107,7 +110,7 @@ export async function POST(req: NextRequest) {
         const onboardingState = onboardingService.getOrCreate(effectiveUserId);
     const isFirstMessage = onboardingState.isFirstTime && !onboardingState.firstMessageSent;
 
-    const charInfo = DEFAULT_CHARACTERS[characterId] ?? { name: "角色", persona: "A helpful companion" };
+    const charInfo = DEFAULT_CHARACTERS[characterId] ?? { name: "瑙掕壊", persona: "A helpful companion" };
 
     // Build persona fingerprint
     const personaFP = buildPersonaFingerprint({
@@ -140,7 +143,7 @@ export async function POST(req: NextRequest) {
       }),
     };
 
-    // Unified system prompt builder — merges persona + world + memory + liveness + relationship
+    // Unified system prompt builder 鈥?merges persona + world + memory + liveness + relationship
     const promptBuilder = {
       buildPrompt: async (params: { character: { name: string; persona: string }; message: string }) => {
         const result = buildFinalSystemPrompt({
@@ -162,10 +165,10 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    // ── First-time message injection ──
-    // ── First-time message injection ──
+    // 鈹€鈹€ First-time message injection 鈹€鈹€
+    // 鈹€鈹€ First-time message injection 鈹€鈹€
     const effectiveMessage = isFirstMessage
-      ? "[这是你们第一次对话。请用温柔、略带好奇的语气主动向对方打招呼，简单介绍自己，并邀请对方说说想聊什么。你的回答应该让人感到安心和被期待。]\n\n" + message
+      ? "[杩欐槸浣犱滑绗竴娆″璇濄€傝鐢ㄦ俯鏌斻€佺暐甯﹀ソ濂囩殑璇皵涓诲姩鍚戝鏂规墦鎷涘懠锛岀畝鍗曚粙缁嶈嚜宸憋紝骞堕個璇峰鏂硅璇存兂鑱婁粈涔堛€備綘鐨勫洖绛斿簲璇ヨ浜烘劅鍒板畨蹇冨拰琚湡寰呫€俔\n\n" + message
       : message;
     const effectiveIsVipForRuntime = effectiveIsVip;
     const result = await runChat(
@@ -174,10 +177,10 @@ export async function POST(req: NextRequest) {
     );
 
 
-    // ── Increment conversation turns ──
+    // 鈹€鈹€ Increment conversation turns 鈹€鈹€
     await userQuotaService.increment(effectiveUserId, "conversation_turn");
 
-        // ── First engagement reward ──
+        // 鈹€鈹€ First engagement reward 鈹€鈹€
     let boostedDelta = result.relationshipDelta;
     if (isFirstMessage && onboardingService.isEligibleForFirstReward(effectiveUserId)) {
       boostedDelta = {

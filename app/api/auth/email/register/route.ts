@@ -10,7 +10,7 @@ const RegisterRequest = z.object({
   code: z.string().length(6).regex(/^\d+$/, "验证码格式不正确"),
   password: z.string().min(6, "密码至少6位").max(128),
   confirmPassword: z.string(),
-  inviteCode: z.string().min(4, "邀请码格式不正确").max(32),
+  inviteCode: z.string().min(4, "邀请码格式不正确").max(32).optional(),
 }).refine((d) => d.password === d.confirmPassword, {
   message: "两次密码不一致",
   path: ["confirmPassword"],
@@ -55,16 +55,19 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Validate and redeem invite code (atomic)
-    const invite = await queryOne<{ id: string; type: string }>(
+    let invite = null;
+    if (inviteCode) {
+      invite = await queryOne<{ id: string; type: string }>(
       `SELECT id, type FROM invite_codes
        WHERE code = $1 AND is_active = true
        AND (expires_at IS NULL OR expires_at > now())
        AND use_count < max_uses
        FOR UPDATE`,
       [inviteCode],
-    );
+      );
+    }
 
-    if (!invite) {
+    if (inviteCode && !invite) {
       // Brief delay to slow down brute-force
       await new Promise((r) => setTimeout(r, 200 + Math.random() * 300));
       return NextResponse.json({ error: "邀请码无效或已用完" }, { status: 400 });
@@ -95,15 +98,17 @@ export async function POST(req: NextRequest) {
       [userId, email, passwordHash],
     );
 
-    // Redeem invite code
-    await query(
-      "UPDATE invite_codes SET use_count = use_count + 1 WHERE id = $1 AND use_count < max_uses",
+    // Redeem invite code (if provided)
+    if (invite) {
+      await query(
+        "UPDATE invite_codes SET use_count = use_count + 1 WHERE id = $1 AND use_count < max_uses",
       [invite.id],
     );
     await query(
       "INSERT INTO invite_usage (invite_code_id, used_by) VALUES ($1, $2)",
       [invite.id, userId],
-    );
+        );
+    }
 
     // Create session
     const token = await createSession(userId);
