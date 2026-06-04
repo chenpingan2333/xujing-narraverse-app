@@ -4,7 +4,7 @@ const PROD_URL = process.env["NARRAVERSE_URL"] ?? "https://xujing-narraverse-app
 
 const config: CapacitorConfig = {
   appId: "ai.narraverse.app",
-  appName: "Ðð¾³",
+  appName: "XuJing",
   webDir: "out",
 
   // Production: load from deployed URL

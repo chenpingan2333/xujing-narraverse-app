@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Ðð¾³</string>
-    <string name="title_activity_main">Ðð¾³</string>
+    <string name="app_name">XuJing</string>
+    <string name="title_activity_main">XuJing</string>
     <string name="package_name">ai.narraverse.app</string>
     <string name="custom_url_scheme">ai.narraverse.app</string>
 </resources>

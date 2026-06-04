@@ -54,7 +54,7 @@ jobs:
             -keyalg RSA -keysize 2048 -validity 10000 \
             -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
             -keypass ${{ secrets.KEYSTORE_PASSWORD }} \
-            -dname "CN=Narraverse, OU=Dev, O=Narraverse, L=Beijing, ST=Beijing, C=CN"
+            -dname "CN=XuJing, OU=Dev, O=XuJing, L=Beijing, ST=Beijing, C=CN"
           echo "storeFile=narraverse-release.keystore" > android/keystore.properties
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/keystore.properties
           echo "keyAlias=narraverse" >> android/keystore.properties
@@ -62,6 +62,27 @@ jobs:
 
       - name: Sync Capacitor
         run: npx cap sync
+
+      - name: Fix app name (cap sync overwrites strings.xml)
+        run: |
+          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">XuJing</string>|' android/app/src/main/res/values/strings.xml
+          sed -i 's|<string name="title_activity_main">.*</string>|<string name="title_activity_main">XuJing</string>|' android/app/src/main/res/values/strings.xml
+
+      - name: Generate app icon (after cap sync)
+        run: |
+          npm install -g sharp-cli 2>/dev/null || true
+          for size in 48 72 96 144 192; do
+            case $size in
+              48) dir="mipmap-mdpi" ;;
+              72) dir="mipmap-hdpi" ;;
+              96) dir="mipmap-xhdpi" ;;
+              144) dir="mipmap-xxhdpi" ;;
+              192) dir="mipmap-xxxhdpi" ;;
+            esac
+            mkdir -p "android/app/src/main/res/$dir"
+            npx sharp -i icon.png -o "android/app/src/main/res/$dir/ic_launcher.png" resize $size $size
+            cp "android/app/src/main/res/$dir/ic_launcher.png" "android/app/src/main/res/$dir/ic_launcher_round.png"
+          done
 
       - name: Build Android Release APK
         run: cd android && chmod +x gradlew && ./gradlew assembleRelease
@@ -71,7 +92,7 @@ jobs:
         run: |
           TAG=${{ github.ref_name }}
           echo "tag=${TAG#v}" >> $GITHUB_OUTPUT
-          echo "apk_name=narraverse-${TAG#v}.apk" >> $GITHUB_OUTPUT
+          echo "apk_name=xujing-${TAG#v}.apk" >> $GITHUB_OUTPUT
 
       - name: Rename APK
         run: |
@@ -80,15 +101,15 @@ jobs:
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: narraverse-apk
+          name: xujing-apk
           path: ${{ steps.version.outputs.apk_name }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "Ðð¾³ v${{ steps.version.outputs.tag }}"
+          name: "XuJing v${{ steps.version.outputs.tag }}"
           body: |
-            ## Ðð¾³ Narraverse v${{ steps.version.outputs.tag }}
+            ## XuJing v${{ steps.version.outputs.tag }}
 
             ### Android APK
 
@@ -103,6 +124,3 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-
-
-
