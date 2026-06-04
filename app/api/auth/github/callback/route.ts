@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
 
     const token = await createSession(userId);
     const redirectRes = NextResponse.redirect(new URL("/chat", req.url));
-    redirectRes.cookies.set("narraverse_session", token, {
+    redirectRes.cookies.set("narra_session", token, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",

@@ -96,7 +96,7 @@ function ChatPageInner() {
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
   // Fetch current user from session
   useEffect(() => {
-    fetch("/api/auth/session/me").then((r) => { if (r.status === 401) { router.replace("/login?redirect=/chat"); return { user: {} }; } return r.json(); }).then((data) => { if (data.user?.id) setUserId(data.user.id); }).catch(() => {});
+    fetch("/api/auth/session/me").then((r) => r.json()).then((data) => { if (data.user?.id) setUserId(data.user.id); }).catch(() => {});
   }, []);
   useEffect(() => () => { streamFrames.current.forEach((id) => cancelAnimationFrame(id)); }, []);
   useEffect(() => {
