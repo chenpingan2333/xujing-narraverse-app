@@ -1,6 +1,6 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
-const PROD_URL = process.env["NARRAVERSE_URL"] ?? "https://xujing-narraverse-app.vercel.app";
+const PROD_URL = process.env["NARRAVERSE_URL"] ?? "https://app.modelbridge.top";
 
 const config: CapacitorConfig = {
   appId: "ai.narraverse.app",
