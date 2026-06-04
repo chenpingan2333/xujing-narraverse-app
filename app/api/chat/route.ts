@@ -88,13 +88,14 @@ export async function GET() {
     } catch {
       // Allow unauthenticated for dev (production uses middleware redirect)
     }
+    const isAuthenticated = effectiveUserId !== "anon" && effectiveUserId !== userId;
 
 
 
     // ── Onboarding: check first-time state ──
     // ── P0-2: Ad trigger check ──
     const adWatched = body._adWatched === true;
-    if (!adWatched) {
+    if (!adWatched && isAuthenticated) {
       const needsAd = await userQuotaService.needsAdForConversation(effectiveUserId, effectiveIsVip);
       if (needsAd) {
         return NextResponse.json({
@@ -104,7 +105,7 @@ export async function GET() {
           _currentTurns: await userQuotaService.getConversationTurns(effectiveUserId),
         }, { status: 200 });
       }
-    } else {
+    } else if (isAuthenticated) {
       try { await userQuotaService.logAdWatch(effectiveUserId, "conversation_continue"); } catch (e) { if (e instanceof AdCooldownError) { return NextResponse.json({ _adCooldown: true, _remainingSeconds: e.remainingSeconds }, { status: 200 }); } throw e; }
     }
 
@@ -179,7 +180,9 @@ export async function GET() {
 
 
     // ── Increment conversation turns ──
-    await userQuotaService.increment(effectiveUserId, "conversation_turn");
+    if (isAuthenticated) {
+      await userQuotaService.increment(effectiveUserId, "conversation_turn");
+    }
 
         // ── First engagement reward ──
     let boostedDelta = result.relationshipDelta;
@@ -203,7 +206,7 @@ export async function GET() {
     const inputTokens = result.metadata?.inputTokens ?? 0;
     const outputTokens = result.metadata?.outputTokens ?? 0;
     const starCost = Math.max(1, Math.ceil((inputTokens + outputTokens) / STAR_DIAMOND_RATE));
-    const currentTurns = await userQuotaService.getConversationTurns(effectiveUserId);
+    const currentTurns = isAuthenticated ? await userQuotaService.getConversationTurns(effectiveUserId) : 0;
     const turnsUntilNextAd = AD_TURN_INTERVAL - (currentTurns % AD_TURN_INTERVAL);
 
     return NextResponse.json({
