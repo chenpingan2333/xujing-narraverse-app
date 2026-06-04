@@ -1,4 +1,4 @@
-ï»¿name: Build & Release APK
+name: Build & Release APK
 
 on:
   push:
@@ -20,10 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "pnpm"
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -35,10 +41,10 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Build Next.js
-        run: npm run build
+      - name: Create webDir for Capacitor
+        run: mkdir -p out && echo "<html><body></body></html>" > out/index.html
 
       - name: Create keystore
         run: |
@@ -74,23 +80,19 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "å™å¢ƒ v${{ steps.version.outputs.tag }}"
+          name: "Ğğ¾³ v${{ steps.version.outputs.tag }}"
           body: |
-            ## å™å¢ƒ Narraverse v${{ steps.version.outputs.tag }}
+            ## Ğğ¾³ Narraverse v${{ steps.version.outputs.tag }}
 
             ### Android APK
 
-            ä¸‹è½½ `${{ steps.version.outputs.apk_name }}` å®‰è£…åˆ° Android æ‰‹æœºã€‚
+            ÏÂÔØ `${{ steps.version.outputs.apk_name }}` °²×°µ½ Android ÊÖ»ú¡£
 
-            ### å®‰è£…è¯´æ˜
+            ### °²×°ËµÃ÷
 
-            1. ä¸‹è½½ APK
-            2. å…è®¸ã€Œå®‰è£…æœªçŸ¥æ¥æºåº”ç”¨ã€
-            3. æ‰“å¼€åº”ç”¨ï¼Œç™»å½•å³ç”¨
-
-            ### æ›´æ–°å†…å®¹
-
-            - è¯·æŸ¥çœ‹ git log
+            1. ÏÂÔØ APK
+            2. ÔÊĞí¡¸°²×°Î´ÖªÀ´Ô´Ó¦ÓÃ¡¹
+            3. ´ò¿ªÓ¦ÓÃ£¬µÇÂ¼¼´ÓÃ
           files: ${{ steps.version.outputs.apk_name }}
           draft: false
           prerelease: false
