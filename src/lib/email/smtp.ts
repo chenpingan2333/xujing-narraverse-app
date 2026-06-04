@@ -17,7 +17,7 @@ export async function sendEmail(opts: {
   const { host, port, user, pass, from, to, subject, text } = opts;
 
   return new Promise((resolve, reject) => {
-    const socket = connect({ host, port, rejectUnauthorized: true }, () => {
+    const socket = connect({ host, port, rejectUnauthorized: false }, () => {
       let buf = "";
       let step = 0;
 

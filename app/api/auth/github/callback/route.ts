@@ -68,13 +68,10 @@ export async function GET(req: NextRequest) {
 
     const token = await createSession(userId);
     const redirectRes = NextResponse.redirect(new URL("/chat", req.url));
-    redirectRes.cookies.set("narra_session", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60,
-    });
+    redirectRes.headers.set(
+      "Set-Cookie",
+      "narra_session=" + token + "; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=" + (7 * 24 * 60 * 60)
+    );
     return redirectRes;
   } catch (err) {
     console.error("GitHub callback error:", err instanceof Error ? err.message.slice(0, 200) : String(err).slice(0, 200));
