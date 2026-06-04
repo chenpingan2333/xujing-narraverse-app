@@ -2,19 +2,33 @@ import { Pool } from "pg";
 
 const globalPool: { pool: Pool | null } = { pool: null };
 
-export function getPool(): Pool {
-  if (!globalPool.pool) {
-    globalPool.pool = new Pool({
-      host: process.env["DB_HOST"] ?? "localhost",
-      port: Number(process.env["DB_PORT"] ?? 5432),
-      database: process.env["DB_NAME"] ?? "narraverse",
-      user: process.env["DB_USER"] ?? "narraverse",
-      password: process.env["DB_PASSWORD"] ?? "narraverse",
-      ssl: process.env["DB_HOST"]?.includes("neon.tech") ? { rejectUnauthorized: false } : false,
+function buildConfig() {
+  const databaseUrl = process.env["DATABASE_URL"];
+  if (databaseUrl) {
+    return {
+      connectionString: databaseUrl,
+      ssl: databaseUrl.includes("neon.tech") ? { rejectUnauthorized: false } : false,
       max: 20,
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,
-    });
+    };
+  }
+  return {
+    host: process.env["DB_HOST"] ?? "localhost",
+    port: Number(process.env["DB_PORT"] ?? 5432),
+    database: process.env["DB_NAME"] ?? "narraverse",
+    user: process.env["DB_USER"] ?? "narraverse",
+    password: process.env["DB_PASSWORD"] ?? "narraverse",
+    ssl: (process.env["DB_HOST"] ?? "").includes("neon.tech") ? { rejectUnauthorized: false } : false,
+    max: 20,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 5_000,
+  };
+}
+
+export function getPool(): Pool {
+  if (!globalPool.pool) {
+    globalPool.pool = new Pool(buildConfig());
   }
   return globalPool.pool;
 }
