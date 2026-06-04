@@ -1,4 +1,4 @@
-﻿﻿"use client";
+"use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -36,9 +36,9 @@ interface MemoryEvent { type: string; content: string; importance?: number; }
 interface CharacterInfo { id: string; name: string; persona: string; avatar: string; tier: string; }
 
 const WORLD_META: Record<string, { emoji: string; label: string }> = {
-  fantasy: { emoji: "\u{1F3F0}", label: "\u827e\u5c14\u5fb7\u5170" },
-  scifi:   { emoji: "\u{1F680}", label: "\u661f\u8fb0\u7eaa\u5143" },
-  wuxia:   { emoji: "\u2694\uFE0F", label: "\u6c5f\u6e56\u98ce\u4e91" },
+  fantasy: { emoji: "🏰", label: "艾尔德兰" },
+  scifi:   { emoji: "🚀", label: "星辰纪元" },
+  wuxia:   { emoji: "⚔️", label: "江湖风云" },
 };
 
 let msgIdCounter = 0;
@@ -48,7 +48,7 @@ function ChatPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const characterId = searchParams.get("characterId") ?? "char-001";
-  const characterName = searchParams.get("characterName") ?? "\u827e\u7433";
+  const characterName = searchParams.get("characterName") ?? "艾琳";
   const worldId = searchParams.get("worldId");
   const worldName = searchParams.get("worldName");
   const worldType = searchParams.get("worldType");
@@ -169,7 +169,7 @@ function ChatPageInner() {
       const replyText: string = data.reply ?? "";
       if (replyText.length === 0) {
         const eid = nextMsgId();
-        setMessages((prev) => [...prev, { id: eid, role: "assistant", content: "\u2026\u2026", displayedContent: "\u2026\u2026", timestamp: Date.now() }]);
+        setMessages((prev) => [...prev, { id: eid, role: "assistant", content: "……", displayedContent: "……", timestamp: Date.now() }]);
         return;
       }
 
@@ -205,7 +205,7 @@ function ChatPageInner() {
       }
     } catch {
       const eid = nextMsgId();
-      setMessages((prev) => [...prev, { id: eid, role: "assistant", content: "\u62b1\u6b49\uff0c\u8fde\u63a5\u4f3c\u4e4e\u51fa\u4e86\u95ee\u9898\u2026\u2026\u8bf7\u518d\u8bd5\u4e00\u6b21\u3002", displayedContent: "\u62b1\u6b49\uff0c\u8fde\u63a5\u4f3c\u4e4e\u51fa\u4e86\u95ee\u9898\u2026\u2026\u8bf7\u518d\u8bd5\u4e00\u6b21\u3002", timestamp: Date.now() }]);
+      setMessages((prev) => [...prev, { id: eid, role: "assistant", content: "抱歉，连接似乎出了问题……请再试一次。", displayedContent: "抱歉，连接似乎出了问题……请再试一次。", timestamp: Date.now() }]);
     } finally { setLoading(false); }
   }, [input, loading, characterId, sessionId, worldId, worldType, characterName]);
 
@@ -246,12 +246,12 @@ function ChatPageInner() {
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
           <div style={{ width: 40, height: 40, borderRadius: 14, background: "#fdf0e0",
             display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
-            {currentChar?.avatar ?? "\uD83C\uDF38"}
+            {currentChar?.avatar ?? "🌸"}
           </div>
           <div>
             <Text strong style={{ color: "#5C4033", fontSize: 15, display: "block" }}>{characterName}</Text>
             <Text style={{ color: "#B08968", fontSize: 11, fontStyle: "italic" }}>
-              {currentChar?.persona ?? "\u4e00\u4e2a\u6709\u6696\u610f\u7684\u5b58\u5728"}
+              {currentChar?.persona ?? "一个有暖意的存在"}
             </Text>
           </div>
         </div>
@@ -261,11 +261,11 @@ function ChatPageInner() {
       {worldName && (
         <div style={{ background: "#fdf8f0", borderRadius: 18, padding: 16, border: "1px solid #ead9c0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }}>{WORLD_META[worldType ?? ""]?.emoji ?? "\uD83C\uDF0D"}</span>
+            <span style={{ fontSize: 24 }}>{WORLD_META[worldType ?? ""]?.emoji ?? "🌍"}</span>
             <div>
               <Text strong style={{ color: "#5C4033", fontSize: 13, display: "block" }}>{worldName}</Text>
               <Text style={{ color: "#B08968", fontSize: 11 }}>
-                {WORLD_META[worldType ?? ""]?.label ?? ""}{" \u00b7 "}{worldMode === "advanced" ? "\u6df1\u5ea6\u53d9\u4e8b" : "\u8f7b\u677e\u6f2b\u6e38"}
+                {WORLD_META[worldType ?? ""]?.label ?? ""}{" · "}{worldMode === "advanced" ? "深度叙事" : "轻松漫游"}
               </Text>
             </div>
           </div>
@@ -279,17 +279,17 @@ function ChatPageInner() {
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <Text style={{ color: "#B08968", fontSize: 12 }}>
-            <HeartOutlined style={{ marginRight: 6 }} />\u5173\u7cfb\u72b6\u6001
+            <HeartOutlined style={{ marginRight: 6 }} />关系状态
           </Text>
           <Text style={{ color: relModel.trend === "warming" ? "#e8965e" : relModel.trend === "cooling" ? "#8b7355" : "#B08968", fontSize: 12 }}>
-            {getTrendEmoji(relModel.trend)} {relModel.trend === "warming" ? "\u5347\u6e29\u4e2d" : relModel.trend === "cooling" ? "\u964d\u6e29\u4e2d" : "\u7a33\u5b9a"}
+            {getTrendEmoji(relModel.trend)} {relModel.trend === "warming" ? "升温中" : relModel.trend === "cooling" ? "降温中" : "稳定"}
           </Text>
         </div>
 
         {/* Temperature */}
         <div style={{ textAlign: "center", marginBottom: 16 }}>
           <div style={{ fontSize: 42, fontWeight: 300, color: "#e8965e", fontFamily: "'Georgia', serif", lineHeight: 1 }}>
-            {relModel.overallTemp}\u00b0
+            {relModel.overallTemp}°
           </div>
           <Text style={{ color: "#B08968", fontSize: 13, display: "block", marginTop: 4 }}>{relModel.phaseLabel}</Text>
         </div>
@@ -297,7 +297,7 @@ function ChatPageInner() {
         {/* Warmth */}
         <div style={{ marginBottom: 14 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-            <Text style={{ fontSize: 11, color: "#B08968" }}>\u6696\u610f</Text>
+            <Text style={{ fontSize: 11, color: "#B08968" }}>暖意</Text>
             <Text style={{ fontSize: 11, color: "#e8965e" }}>{relModel.warmth}</Text>
           </div>
           <div style={{ height: 6, borderRadius: 3, background: "#f0e5d5", overflow: "hidden" }}>
@@ -309,7 +309,7 @@ function ChatPageInner() {
         {/* Stability */}
         <div style={{ marginBottom: 14 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-            <Text style={{ fontSize: 11, color: "#B08968" }}>\u4fe1\u4efb</Text>
+            <Text style={{ fontSize: 11, color: "#B08968" }}>信任</Text>
             <Text style={{ fontSize: 11, color: "#d4945c" }}>{relModel.stability}</Text>
           </div>
           <div style={{ height: 3, borderRadius: 2, background: "#f0e5d5", position: "relative", overflow: "hidden" }}>
@@ -325,7 +325,7 @@ function ChatPageInner() {
         {/* Proximity */}
         <div style={{ marginBottom: relReason ? 14 : 0 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-            <Text style={{ fontSize: 11, color: "#B08968" }}>\u4eb2\u8fd1</Text>
+            <Text style={{ fontSize: 11, color: "#B08968" }}>亲近</Text>
             <Text style={{ fontSize: 11, color: "#f0a860" }}>{relModel.proximity}</Text>
           </div>
           <div style={{ display: "flex", justifyContent: "center", gap: 4, padding: "4px 0" }}>
@@ -352,11 +352,11 @@ function ChatPageInner() {
       {/* Memories */}
       <div style={{ background: "#fdf8f0", borderRadius: 18, padding: 18, border: "1px solid #ead9c0" }}>
         <Text style={{ color: "#B08968", fontSize: 12, display: "block", marginBottom: 10 }}>
-          <BookOutlined style={{ marginRight: 6 }} />\u8bb0\u5fc6\u7247\u6bb5
+          <BookOutlined style={{ marginRight: 6 }} />记忆片段
         </Text>
         {memories.length === 0 ? (
           <Text style={{ color: "#c4a68a", fontSize: 12, fontStyle: "italic" }}>
-            \u804a\u5f97\u591a\u4e86\uff0c\u8fd9\u91cc\u4f1a\u6162\u6162\u586b\u6ee1\u4f60\u4eec\u7684\u56de\u5fc6\u2026\u2026
+            聊得多了，这里会慢慢填满你们的回忆……
           </Text>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -372,15 +372,15 @@ function ChatPageInner() {
       {/* Star diamonds with animation */}
       <div style={{ background: "#fdf8f0", borderRadius: 18, padding: 16, border: "1px solid #ead9c0", textAlign: "center" }}>
         <Text style={{ color: "#B08968", fontSize: 12, display: "block", marginBottom: 6 }}>
-          <WalletOutlined style={{ marginRight: 4 }} />\u661f\u94bb
+          <WalletOutlined style={{ marginRight: 4 }} />星钻
         </Text>
-        <Text style={{ color: "#c4a68a", fontSize: 10, display: "block", marginBottom: 4 }}>\u5173\u7cfb\u5f71\u54cd</Text>
+        <Text style={{ color: "#c4a68a", fontSize: 10, display: "block", marginBottom: 4 }}>关系影响</Text>
         <DiamondAnimation type={reaction.visible ? reaction.animationType : "warm-pulse"} active={diamondAnim} onComplete={() => setDiamondAnim(false)}>
           <span style={{ fontSize: 28, color: "#e8965e", fontWeight: 500, fontFamily: "'Georgia',serif" }}>
             {starBalance}
           </span>
         </DiamondAnimation>
-        <Text style={{ color: "#B08968", fontSize: 11, display: "block" }}>\u4efd\u5fc3\u610f</Text>
+        <Text style={{ color: "#B08968", fontSize: 11, display: "block" }}>份心意</Text>
         {reaction.visible && (
           <div style={{ marginTop: 8, background: "#fef5e7", borderRadius: 10, padding: "8px 12px", border: "1px solid #f0dcc0" }}>
             <Text style={{ color: "#8b7355", fontSize: 11, display: "block", lineHeight: 1.5, whiteSpace: "pre-line" }}>
@@ -388,7 +388,7 @@ function ChatPageInner() {
             </Text>
             {reaction.characterReaction && (
               <Text style={{ color: reaction.accentColor, fontSize: 11, fontStyle: "italic", display: "block", marginTop: 4 }}>
-                \u2014 {characterName}\uff1a{reaction.characterReaction}
+                — {characterName}：{reaction.characterReaction}
               </Text>
             )}
           </div>
@@ -403,7 +403,7 @@ function ChatPageInner() {
       <div className="chat-left-sidebar" style={{ width: 210, flexShrink: 0, background: "#fdf8f0", borderRight: "1px solid #ead9c0", overflow: "auto" }}>
         <div style={{ padding: "14px 18px", borderBottom: "1px solid #ead9c0" }}>
           <Button type="text" icon={<UserOutlined />} onClick={() => router.push("/profile")}
-            style={{ color: "#B08968", fontFamily: "'Georgia','Noto Serif SC',serif", fontWeight: 400 }}>\u53d9\u5883</Button>
+            style={{ color: "#B08968", fontFamily: "'Georgia','Noto Serif SC',serif", fontWeight: 400 }}>叙境</Button>
         </div>
         {characterList}
       </div>
@@ -417,11 +417,11 @@ function ChatPageInner() {
             <Title level={5} style={{ margin: 0, color: "#5C4033", fontSize: 16, fontWeight: 400, fontFamily: "'Georgia','Noto Serif SC',serif", whiteSpace: "nowrap" }}>{characterName}</Title>
             {worldName ? (
               <Tag className="world-selector-tag" onClick={goToWorlds} style={{ fontSize: 11, flexShrink: 0 }}>
-                {WORLD_META[worldType ?? ""]?.emoji ?? "\uD83C\uDF0D"} {worldName}
+                {WORLD_META[worldType ?? ""]?.emoji ?? "🌍"} {worldName}
               </Tag>
             ) : (
               <Tag className="world-selector-tag" onClick={goToWorlds} style={{ fontSize: 11, flexShrink: 0 }}>
-                <EditOutlined style={{ marginRight: 3 }} />\u9009\u62e9\u4e16\u754c
+                <EditOutlined style={{ marginRight: 3 }} />选择世界
               </Tag>
             )}
           </div>
@@ -450,16 +450,16 @@ function ChatPageInner() {
             )}
             {messages.length === 0 && (!onboardingState?.isFirstTime || onboardingState?.firstMessageSent) && (
               <div className="xj-blur-in" style={{ textAlign: "center", marginTop: 72 }}>
-                <div style={{ fontSize: 52, marginBottom: 16 }}>{currentChar?.avatar ?? "\uD83C\uDF38"}</div>
+                <div style={{ fontSize: 52, marginBottom: 16 }}>{currentChar?.avatar ?? "🌸"}</div>
                 <Title level={4} style={{ color: "#5C4033", fontWeight: 400, fontFamily: "'Georgia','Noto Serif SC',serif" }}>
-                  \u4f60\u597d\uff0c\u6211\u662f {characterName}
+                  你好，我是 {characterName}
                 </Title>
                 <Paragraph style={{ color: "#B08968", fontSize: 14, fontStyle: "italic" }}>
-                  {currentChar?.persona ?? "\u5f88\u9ad8\u5174\u9047\u89c1\u4f60\u3002"}
+                  {currentChar?.persona ?? "很高兴遇见你。"}
                 </Paragraph>
                 {worldName && (
                   <Tag style={{ marginTop: 8, background: "#fdf0e0", border: "none", color: "#B08968", borderRadius: 8 }}>
-                    {WORLD_META[worldType ?? ""]?.emoji ?? "\uD83C\uDF0D"} \u5f53\u524d\u4e16\u754c\uff1a{worldName}
+                    {WORLD_META[worldType ?? ""]?.emoji ?? "🌍"} 当前世界：{worldName}
                   </Tag>
                 )}
               </div>
@@ -481,7 +481,7 @@ function ChatPageInner() {
               <div className="xj-soft-in" style={{ display: "flex", gap: 10, marginBottom: 14 }}>
                 <Avatar icon={<RobotOutlined />} size={32} style={{ background: "#fdf0e0", color: "#B08968" }} />
                 <div style={{ padding: "12px 16px", borderRadius: 18, background: "#fef5e7", border: "1px solid #f0dcc0" }}>
-                  <span style={{ color: "#B08968", fontSize: 14 }}>\u6b63\u5728\u601d\u8003</span>
+                  <span style={{ color: "#B08968", fontSize: 14 }}>正在思考</span>
                   <span className="xj-blink" style={{ color: "#B08968" }}>...</span>
                 </div>
               </div>
@@ -493,7 +493,7 @@ function ChatPageInner() {
         <div style={{ background: "#fdf8f0", borderTop: "1px solid #ead9c0", padding: "12px 24px" }}>
           <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", gap: 10, alignItems: "flex-end" }}>
             <TextArea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-              placeholder="\u60f3\u8bf4\u70b9\u4ec0\u4e48\u2026\u2026"
+              placeholder="想说点什么……"
               autoSize={{ minRows: 1, maxRows: 4 }} style={{ flex: 1 }} disabled={loading} />
             <Button type="primary" icon={<SendOutlined />} onClick={sendMessage} loading={loading} disabled={!input.trim()}
               style={{ background: input.trim() ? "linear-gradient(135deg, #f6c177, #f0a860)" : "#e8d5c0", border: "none", borderRadius: 14, height: 40, width: 44, display: "flex", alignItems: "center", justifyContent: "center", color: "#fffdf9", transition: "all 0.3s", opacity: input.trim() ? 1 : 0.6 }} />
@@ -506,7 +506,7 @@ function ChatPageInner() {
         {Journal}
       </div>
 
-      <Drawer title="\u89d2\u8272" placement="left" open={mobileDrawer} onClose={() => setMobileDrawer(false)} width={260}
+      <Drawer title="角色" placement="left" open={mobileDrawer} onClose={() => setMobileDrawer(false)} width={260}
         styles={{ body: { padding: 0, background: "#fffaf5" }, header: { background: "#fdf0e0", borderBottom: "1px solid #ead9c0" } }}>
         {characterList}
       </Drawer>
@@ -516,7 +516,7 @@ function ChatPageInner() {
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={<p style={{ textAlign: "center", color: "#B08968", padding: 48 }}>\u5979\u5728\u8fd9\u91cc\uff0c\u4e00\u76f4\u5728\u7b49\u4f60\u3002</p>}>
+    <Suspense fallback={<p style={{ textAlign: "center", color: "#B08968", padding: 48 }}>她在这里，一直在等你。</p>}>
       <ChatPageInner />
     </Suspense>
   );
