@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE } from "@/features/narraverse/auth/types";
 
 const PUBLIC_PATHS = [
@@ -37,7 +37,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const requireInvite = process.env.REQUIRE_INVITE !== "false";
+  // Invite gate: default OFF, only active when explicitly enabled
+  const requireInvite = process.env.REQUIRE_INVITE === "true";
   const needsInvite = requireInvite && INVITE_PROTECTED.some((p) =>
     pathname.startsWith(p)
   );

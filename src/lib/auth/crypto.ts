@@ -1,9 +1,11 @@
 import { createHash, randomBytes, createCipheriv, createDecipheriv } from "node:crypto";
+import { hash, compare } from "bcryptjs";
 
 const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
 const KEY_LENGTH = 32;
+const BCRYPT_ROUNDS = 12;
 
 function getEncryptionKey(): Buffer {
   const key = process.env["API_KEY_ENCRYPTION_KEY"];
@@ -31,6 +33,16 @@ export function generateOtp(): string {
 /** Generate a session token: 32 random bytes → hex */
 export function generateSessionToken(): string {
   return randomHex(32);
+}
+
+/** Hash a password with bcrypt (12 rounds) */
+export async function hashPassword(password: string): Promise<string> {
+  return hash(password, BCRYPT_ROUNDS);
+}
+
+/** Verify a password against a bcrypt hash */
+export async function verifyPassword(password: string, hashed: string): Promise<boolean> {
+  return compare(password, hashed);
 }
 
 /** Generate an API key with prefix: narra_sk_<32 random hex> */

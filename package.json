@@ -1,40 +1,42 @@
-{
-    "name":  "narraverse-memory-engine",
-    "version":  "1.0.0",
-    "private":  true,
-    "type":  "module",
-    "scripts":  {
-                    "type-check":  "tsc --noEmit",
-                    "lint":  "eslint src/",
-                    "test":  "vitest run --coverage",
-                    "test:watch":  "vitest",
-                    "dev":  "next dev",
-                    "build":  "next build",
-                    "start":  "next start"
-                },
-    "devDependencies":  {
-                            "@types/node":  "^22.0.0",
-                            "@types/pg":  "^8.20.0",
-                            "@types/react":  "19.2.16",
-                            "@vitest/coverage-v8":  "^3.0.0",
-                            "eslint":  "^9.0.0",
-                            "typescript":  "^5.8.0",
-                            "typescript-eslint":  "^8.0.0",
-                            "vitest":  "^3.0.0"
-                        },
-    "dependencies":  {
-                         "@ant-design/icons":  "^6.0.0",
-                         "antd":  "^5.0.0",
-                         "next":  "^15.0.0",
-                         "pg":  "^8.21.0",
-                         "react":  "^19.0.0",
-                         "react-dom":  "^19.0.0",
-                         "zod":  "^3.24.0",
-                         "@capacitor/core":  "^7.0.0",
-                         "@capacitor/cli":  "^7.0.0",
-                         "@capacitor/android":  "^7.0.0",
-                         "@capacitor/status-bar":  "^7.0.0",
-                         "@capacitor/keyboard":  "^7.0.0",
-                         "@capacitor/browser":  "^7.0.0"
-                     }
+﻿{
+    "name": "narraverse-memory-engine",
+    "version": "1.1.1",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "type-check": "tsc --noEmit",
+        "lint": "eslint src/",
+        "test": "vitest run --coverage",
+        "test:watch": "vitest",
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^3.0.0",
+        "@types/node": "^22.0.0",
+        "@types/pg": "^8.20.0",
+        "@types/react": "19.2.16",
+        "@vitest/coverage-v8": "^3.0.0",
+        "eslint": "^9.0.0",
+        "typescript": "^5.8.0",
+        "typescript-eslint": "^8.0.0",
+        "vitest": "^3.0.0"
+    },
+    "dependencies": {
+        "@ant-design/icons": "^6.0.0",
+        "@capacitor/android": "^7.0.0",
+        "@capacitor/browser": "^7.0.0",
+        "@capacitor/cli": "^7.0.0",
+        "@capacitor/core": "^7.0.0",
+        "@capacitor/keyboard": "^7.0.0",
+        "@capacitor/status-bar": "^7.0.0",
+        "antd": "^5.0.0",
+        "bcryptjs": "^3.0.3",
+        "next": "^15.0.0",
+        "pg": "^8.21.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "zod": "^3.24.0"
+    }
 }
