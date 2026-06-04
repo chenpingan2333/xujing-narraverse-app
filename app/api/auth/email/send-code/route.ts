@@ -1,14 +1,8 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { queryOne, query } from "@/lib/db/pool";
 import { sha256, generateOtp } from "@/lib/auth/crypto";
-import { sendEmail } from "@/lib/email/smtp";
+import { sendEmail, isResendConfigured } from "@/lib/email/resend";
 import { SendCodeRequest, OTP_COOLDOWN_MS, OTP_TTL_MS } from "@/features/narraverse/auth/types";
-
-const SMTP_HOST = process.env["SMTP_HOST"] ?? "";
-const SMTP_PORT = parseInt(process.env["SMTP_PORT"] ?? "465", 10);
-const SMTP_USER = process.env["SMTP_USER"] ?? "";
-const SMTP_PASS = process.env["SMTP_PASS"] ?? "";
-const SMTP_FROM = process.env["SMTP_FROM"] ?? SMTP_USER;
 
 export async function POST(req: NextRequest) {
   try {
@@ -54,30 +48,26 @@ export async function POST(req: NextRequest) {
       [email, codeHash],
     );
 
-    // Send email via QQ SMTP
-    if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
+    // Send email via Resend
+    if (isResendConfigured()) {
       try {
-        await sendEmail({
-          host: SMTP_HOST,
-          port: SMTP_PORT,
-          user: SMTP_USER,
-          pass: SMTP_PASS,
-          from: SMTP_FROM,
+        const result = await sendEmail({
           to: email,
-          subject: "叙境 — 验证码",
-          text: `你的验证码是：${code}\n\n10分钟内有效。\n\n— 叙境`,
+          subject: "【叙境】邮箱验证码",
+          text: `您的验证码是 ${code}\n5分钟内有效。\n\n— 叙境`,
         });
-      } catch (smtpErr) {
-        // Log but don't expose SMTP details to client
+        console.log(`[Resend] OTP sent to ${email}, id: ${result.id}`);
+      } catch (emailErr) {
         console.error(
-          "SMTP send error:",
-          smtpErr instanceof Error ? smtpErr.message.slice(0, 200) : String(smtpErr).slice(0, 200),
+          "[Resend] send error:",
+          emailErr instanceof Error ? emailErr.message.slice(0, 200) : String(emailErr).slice(0, 200),
         );
-        // Fall through — still return success if OTP was stored
+        // Still return success — OTP is stored in DB, user can retry or use dev fallback
+        return NextResponse.json({ message: "验证码已发送" });
       }
     } else {
       // Dev fallback: log to console
-      console.log(`[OTP] Code for ${email}: ${code}`);
+      console.log(`[OTP] DEV — Code for ${email}: ${code}`);
     }
 
     return NextResponse.json({ message: "验证码已发送" });
@@ -85,7 +75,7 @@ export async function POST(req: NextRequest) {
     if (err instanceof Error && err.name === "ZodError") {
       return NextResponse.json({ error: "邮箱格式不正确" }, { status: 400 });
     }
-    console.error("Send OTP error:", err instanceof Error ? err.message.slice(0, 200) : String(err).slice(0, 200));
+    console.error("[Send OTP] error:", err instanceof Error ? err.message.slice(0, 200) : String(err).slice(0, 200));
     return NextResponse.json({ error: "发送失败，请稍后重试" }, { status: 500 });
   }
 }
