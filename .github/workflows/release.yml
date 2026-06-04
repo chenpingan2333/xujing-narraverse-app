@@ -70,7 +70,6 @@ jobs:
 
       - name: Generate app icon (after cap sync)
         run: |
-          npm install -g sharp-cli 2>/dev/null || true
           for size in 48 72 96 144 192; do
             case $size in
               48) dir="mipmap-mdpi" ;;
@@ -80,7 +79,7 @@ jobs:
               192) dir="mipmap-xxxhdpi" ;;
             esac
             mkdir -p "android/app/src/main/res/$dir"
-            npx sharp -i icon.png -o "android/app/src/main/res/$dir/ic_launcher.png" resize $size $size
+            convert icon.png -resize ${size}x${size} "android/app/src/main/res/$dir/ic_launcher.png"
             cp "android/app/src/main/res/$dir/ic_launcher.png" "android/app/src/main/res/$dir/ic_launcher_round.png"
           done
 
@@ -124,3 +123,4 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+
