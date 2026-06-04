@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -25,7 +25,7 @@ function LoginPageInner() {
 
   const sendCode = useCallback(async () => {
     if (!email || !email.includes("@")) {
-      message.warning("鐠囩柉绶崗銉︽箒閺佸牏娈戦柇顔绢唸閸︽澘娼?);
+      message.warning("请填写正确的邮箱地址");
       return;
     }
     setSendingCode(true);
@@ -36,7 +36,7 @@ function LoginPageInner() {
         body: JSON.stringify({ email })});
       const data = await res.json();
       if (res.ok) {
-        message.success("妤犲矁鐦夐惍浣稿嚒閸欐垿鈧?);
+        message.success("验证码已发送");
         setCooldown(30);
         const timer = setInterval(() => {
           setCooldown((prev) => {
@@ -45,10 +45,10 @@ function LoginPageInner() {
           });
         }, 1000);
       } else {
-        message.error(data.error ?? "閸欐垿鈧礁銇戠拹?);
+        message.error(data.error ?? "发送失败");
       }
     } catch {
-      message.error("缂冩垹绮跺鍌氱埗閿涘矁顕粙宥呮倵閸愬秷鐦?);
+      message.error("网络连接失败，请重试");
     } finally {
       setSendingCode(false);
     }
@@ -56,15 +56,15 @@ function LoginPageInner() {
 
   const handleRegister = useCallback(async () => {
     if (otp.length !== 6) {
-      message.warning("鐠囩柉绶崗?娴ｅ秹鐛欑拠浣虹垳");
+      message.warning("请填写验证码");
       return;
     }
     if (password.length < 6) {
-      message.warning("鐎靛棛鐖滈懛鍐茬毌6娴?);
+      message.warning("密码至少6位");
       return;
     }
     if (password !== confirmPassword) {
-      message.warning("娑撱倖顐肩€靛棛鐖滄稉宥勭閼?);
+      message.warning("两次密码不一致");
       return;
     }
     setLoading(true);
@@ -79,13 +79,13 @@ function LoginPageInner() {
           confirmPassword})});
       const data = await res.json();
       if (res.ok) {
-        message.success("濞夈劌鍞介幋鎰");
+        message.success("注册成功");
         router.replace(redirectTo);
       } else {
-        message.error(data.error ?? "濞夈劌鍞芥径杈Е");
+        message.error(data.error ?? "注册失败");
       }
     } catch {
-      message.error("缂冩垹绮跺鍌氱埗閿涘矁顕粙宥呮倵閸愬秷鐦?);
+      message.error("网络连接失败，请重试");
     } finally {
       setLoading(false);
     }
@@ -99,13 +99,13 @@ function LoginPageInner() {
     <Layout style={{ minHeight: "100vh", background: "#fffaf5" }}>
       <Content style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
         <div style={{ maxWidth: 420, width: "100%", textAlign: "center" }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>棣冨</div>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>叙境</div>
           <Title level={3} style={{
             color: "#5C4033", fontWeight: 400,
             fontFamily: "'Georgia','Noto Serif SC',serif", marginBottom: 8}}>
-            閸欐瑥顣?          </Title>
+            登录叙境          </Title>
           <Paragraph style={{ color: "#B08968", fontSize: 14, marginBottom: 32 }}>
-            娑撯偓娑擃亝婀佸〒鈺佸閻ㄥ嫮鈹栭梻杈剧礉鐟欐帟澹婇崷銊х搼娴ｇ姰鈧?          </Paragraph>
+            开启你的故事之旅          </Paragraph>
 
           <Button
             block
@@ -121,7 +121,7 @@ function LoginPageInner() {
           </Button>
 
           <Divider style={{ borderColor: "#ead9c0", color: "#c4a68a", fontSize: 12 }}>
-            閹存牔濞囬悽銊╁仏缁?          </Divider>
+            或使用邮箱          </Divider>
 
           {!showRegister ? (
             <Button
@@ -135,7 +135,7 @@ function LoginPageInner() {
                 border: "none", color: "#fffdf9",
                 fontSize: 15, fontWeight: 400}}
             >
-              闁喚顔堟宀冪槈閻胶娅ヨぐ?            </Button>
+              邮箱注册            </Button>
           ) : (
             <div style={{
               background: "#fdf8f0", borderRadius: 16, padding: "28px 24px",
@@ -143,7 +143,7 @@ function LoginPageInner() {
               {/* Header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                 <Text style={{ color: "#B08968", fontSize: 13 }}>
-                  <MailOutlined style={{ marginRight: 6 }} />闁喚顔堝▔銊ュ斀
+                  <MailOutlined style={{ marginRight: 6 }} />邮箱验证
                 </Text>
                 <Button
                   type="text"
@@ -151,12 +151,12 @@ function LoginPageInner() {
                   onClick={() => setShowRegister(false)}
                   style={{ color: "#c4a68a", fontSize: 12, padding: 0 }}
                 >
-                  鏉╂柨娲?                </Button>
+                  返回                </Button>
               </div>
 
               {/* Email + Send Code */}
               <div style={{ marginBottom: 14 }}>
-                <Text style={{ color: "#8B7355", fontSize: 12, display: "block", marginBottom: 6 }}>闁喚顔?/Text>
+                <Text style={{ color: "#8B7355", fontSize: 12, display: "block", marginBottom: 6 }}>邮箱</Text>
                 <div style={{ display: "flex", gap: 8 }}>
                   <Input
                     size="large"
@@ -179,17 +179,17 @@ function LoginPageInner() {
                       border: "none", color: "#fffdf9", borderRadius: 10,
                       fontWeight: 400, whiteSpace: "nowrap"}}
                   >
-                    {cooldown > 0 ? `${cooldown}s` : "閸欐垿鈧線鐛欑拠浣虹垳"}
+                    {cooldown > 0 ? `${cooldown}s` : "获取验证码"}
                   </Button>
                 </div>
               </div>
 
               {/* Verification Code */}
               <div style={{ marginBottom: 14 }}>
-                <Text style={{ color: "#8B7355", fontSize: 12, display: "block", marginBottom: 6 }}>闁喚顔堟宀冪槈閻?/Text>
+                <Text style={{ color: "#8B7355", fontSize: 12, display: "block", marginBottom: 6 }}>验证码</Text>
                 <Input
                   size="large"
-                  placeholder="鏉堟挸鍙?娴ｅ秹鐛欑拠浣虹垳"
+                  placeholder="请输入6位验证码"
                   value={otp}
                   maxLength={6}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
@@ -202,10 +202,10 @@ function LoginPageInner() {
 
               {/* Password */}
               <div style={{ marginBottom: 14 }}>
-                <Text style={{ color: "#8B7355", fontSize: 12, display: "block", marginBottom: 6 }}>鐎靛棛鐖?/Text>
+                <Text style={{ color: "#8B7355", fontSize: 12, display: "block", marginBottom: 6 }}>密码</Text>
                 <Input.Password
                   size="large"
-                  placeholder="閼峰啿鐨?娴ｅ秴鐦戦惍?
+                  placeholder="请设置密码"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   iconRender={(visible) => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
@@ -217,10 +217,10 @@ function LoginPageInner() {
 
               {/* Confirm Password */}
               <div style={{ marginBottom: 14 }}>
-                <Text style={{ color: "#8B7355", fontSize: 12, display: "block", marginBottom: 6 }}>绾喛顓荤€靛棛鐖?/Text>
+                <Text style={{ color: "#8B7355", fontSize: 12, display: "block", marginBottom: 6 }}>确认密码</Text>
                 <Input.Password
                   size="large"
-                  placeholder="閸愬秵顐兼潏鎾冲弳鐎靛棛鐖?
+                  placeholder="请再次输入密码"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   iconRender={(visible) => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
@@ -246,7 +246,7 @@ function LoginPageInner() {
                     : "#e8d5c0",
                   border: "none", color: "#fffdf9", fontWeight: 400}}
               >
-                濞夈劌鍞?              </Button>
+                注册              </Button>
             </div>
           )}
         </div>
@@ -259,7 +259,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <Layout style={{ minHeight: "100vh", background: "#fffaf5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <Text style={{ color: "#B08968", fontSize: 14 }}>閸旂姾娴囨稉顓涒偓锔光偓?/Text>
+        <Text style={{ color: "#B08968", fontSize: 14 }}>加载中...</Text>
       </Layout>
     }>
       <LoginPageInner />
