@@ -1,0 +1,97 @@
+﻿name: Build & Release APK
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version name (e.g. 1.0.0)"
+        required: true
+        default: "1.0.0"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Create keystore
+        run: |
+          keytool -genkey -v \
+            -keystore android/narraverse-release.keystore \
+            -alias narraverse \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            -keypass ${{ secrets.KEYSTORE_PASSWORD }} \
+            -dname "CN=Narraverse, OU=Dev, O=Narraverse, L=Beijing, ST=Beijing, C=CN"
+          echo "storeFile=narraverse-release.keystore" > android/keystore.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/keystore.properties
+          echo "keyAlias=narraverse" >> android/keystore.properties
+          echo "keyPassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/keystore.properties
+
+      - name: Sync Capacitor
+        run: npx cap sync
+
+      - name: Build Android Release APK
+        run: cd android && ./gradlew assembleRelease
+
+      - name: Get version
+        id: version
+        run: |
+          TAG=${{ github.ref_name }}
+          echo "tag=${TAG#v}" >> $GITHUB_OUTPUT
+          echo "apk_name=narraverse-${TAG#v}.apk" >> $GITHUB_OUTPUT
+
+      - name: Rename APK
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk ${{ steps.version.outputs.apk_name }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "叙境 v${{ steps.version.outputs.tag }}"
+          body: |
+            ## 叙境 Narraverse v${{ steps.version.outputs.tag }}
+
+            ### Android APK
+
+            下载 `${{ steps.version.outputs.apk_name }}` 安装到 Android 手机。
+
+            ### 安装说明
+
+            1. 下载 APK
+            2. 允许「安装未知来源应用」
+            3. 打开应用，登录即用
+
+            ### 更新内容
+
+            - 请查看 git log
+          files: ${{ steps.version.outputs.apk_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true

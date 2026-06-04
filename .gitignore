@@ -1,0 +1,29 @@
+﻿# Android
+android/app/build/
+android/.gradle/
+android/local.properties
+android/keystore.properties
+android/*.keystore
+*.apk
+*.aab
+
+# Env
+.env
+.env.local
+.env*.local
+
+# Deps
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,128 @@
+﻿"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "antd";
+
+export default function HomePage() {
+  const router = useRouter();
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), 400);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleStart = () => {
+    const dc = localStorage.getItem("xujing_default_character");
+    router.push(dc ? `/chat?characterId=${dc}` : "/characters");
+  };
+
+  return (
+    <div style={{
+      height: "100vh", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      background: "linear-gradient(170deg, #fff8ed 0%, #fef0db 30%, #fde8d0 70%, #fce0c8 100%)",
+      position: "relative", overflow: "hidden",
+    }}>
+      {/* Floating light particles */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="xj-float" style={{
+            position: "absolute",
+            left: `${10 + i * 11}%`,
+            top: `${20 + (i % 5) * 14}%`,
+            width: 6 + (i % 3) * 4,
+            height: 6 + (i % 3) * 4,
+            borderRadius: "50%",
+            background: i % 2 === 0
+              ? "rgba(246,193,119,0.25)"
+              : "rgba(242,181,212,0.18)",
+            animationDelay: `${i * 0.6}s`,
+            animationDuration: `${4 + (i % 3) * 2}s`,
+          }} />
+        ))}
+      </div>
+
+      {/* Main content */}
+      <div style={{
+        textAlign: "center", zIndex: 1,
+        opacity: ready ? 1 : 0,
+        transition: "opacity 1.2s ease",
+      }}>
+        {/* Title */}
+        <h1 style={{
+          fontFamily: "'Georgia', 'Noto Serif SC', 'Songti SC', serif",
+          fontSize: 64, fontWeight: 400, color: "#5C4033",
+          margin: 0, letterSpacing: 6,
+          opacity: ready ? 1 : 0, filter: ready ? "blur(0)" : "blur(4px)",
+          transition: "opacity 0.8s ease, filter 0.8s ease",
+        }}>
+          叙境
+        </h1>
+        <p style={{
+          fontFamily: "'Georgia', 'Noto Serif SC', serif",
+          fontSize: 17, color: "#B08968", marginTop: 8,
+          letterSpacing: 8, fontWeight: 400,
+          opacity: ready ? 1 : 0,
+          transition: "opacity 0.8s ease 0.15s",
+        }}>
+          一个有温度的存在
+        </p>
+        <p style={{
+          fontSize: 14, color: "#c4a68a", marginTop: 16, marginBottom: 0,
+          letterSpacing: 4, fontWeight: 300,
+          opacity: ready ? 1 : 0,
+          transition: "opacity 0.8s ease 0.3s",
+        }}>
+          一个有温度的叙事世界
+        </p>
+      </div>
+
+      {/* CTA */}
+      <div style={{
+        marginTop: 48, zIndex: 1,
+        opacity: ready ? 1 : 0,
+        transform: ready ? "translateY(0)" : "translateY(16px)",
+        transition: "all 0.7s ease 0.4s",
+      }}>
+        <Button
+          onClick={handleStart}
+          style={{
+            height: 54, paddingLeft: 48, paddingRight: 48,
+            fontSize: 18, fontWeight: 400,
+            fontFamily: "'Georgia', 'Noto Serif SC', serif",
+            borderRadius: 27,
+            background: "linear-gradient(135deg, #f6c177 0%, #f0a860 100%)",
+            border: "none",
+            color: "#fffdf9",
+            boxShadow: "0 4px 20px rgba(240,168,96,0.30)",
+            letterSpacing: 4,
+            transition: "all 0.4s ease",
+          }}
+          className="xj-glow"
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.transform = "scale(1.03)";
+            (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 28px rgba(240,168,96,0.40)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.transform = "scale(1)";
+            (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(240,168,96,0.30)";
+          }}
+        >
+          开始叙境
+        </Button>
+      </div>
+
+      {/* Subtitle */}
+      <p style={{
+        marginTop: 32, fontSize: 13, color: "#c4a68a",
+        letterSpacing: 3, fontWeight: 300, zIndex: 1,
+        opacity: ready ? 1 : 0,
+        transition: "opacity 0.8s ease 0.6s",
+      }}>
+        选择角色 · 进入世界 · 书写你的故事
+      </p>
+    </div>
+  );
+}

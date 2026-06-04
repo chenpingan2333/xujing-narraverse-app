@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">narraverse</string>
+    <string name="title_activity_main">narraverse</string>
+    <string name="package_name">ai.narraverse.app</string>
+    <string name="custom_url_scheme">ai.narraverse.app</string>
+</resources>
