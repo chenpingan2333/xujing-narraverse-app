@@ -2,110 +2,110 @@ import type { WorldContext } from "./story.types.js";
 import type { CharacterData, RelationshipData } from "../chat/chat.types.js";
 
 /**
- * DeepSeek Context Cache ÓÅ»¯£º
- * ËùÓĞ Prompt ±ØĞë²ÉÓÃ¹Ì¶¨Ä£°å½á¹¹¡£
- * ±äÁ¿²¿·ÖÍ¨¹ı·Ö¸ô±ê¼Ç×¢Èë£¬È·±£Ä£°å½á¹¹²»±ä ¡ú »º´æÃüÖĞÂÊ×î´ó»¯¡£
+ * DeepSeek Context Cache ä¼˜åŒ–ï¼š
+ * æ‰€æœ‰ Prompt å¿…é¡»é‡‡ç”¨å›ºå®šæ¨¡æ¿ç»“æ„ã€‚
+ * å˜é‡éƒ¨åˆ†é€šè¿‡åˆ†éš”æ ‡è®°æ³¨å…¥ï¼Œç¡®ä¿æ¨¡æ¿ç»“æ„ä¸å˜ â†’ ç¼“å­˜å‘½ä¸­ç‡æœ€å¤§åŒ–ã€‚
  *
- * Ä£°å½á¹¹£¨²»¿É±ä£©£º
- *   [Header]        ¡ª ¹Ì¶¨½ÇÉ«/ÊÀ½çÉí·İÉùÃ÷
- *   [Context]       ¡ª ¿É±ä£ºµ±Ç°ÊÀ½ç×´Ì¬/½ÇÉ«¹ØÏµ/¾çÇé½ø¶È
- *   [Directives]    ¡ª ¹Ì¶¨£ºĞĞÎª¹æÔò/ÓïÆø/ÏŞÖÆ
- *   [UserMessage]   ¡ª ¿É±ä£ºÓÃ»§ÊäÈë
+ * æ¨¡æ¿ç»“æ„ï¼ˆä¸å¯å˜ï¼‰ï¼š
+ *   [Header]        â€” å›ºå®šè§’è‰²/ä¸–ç•Œèº«ä»½å£°æ˜
+ *   [Context]       â€” å¯å˜ï¼šå½“å‰ä¸–ç•ŒçŠ¶æ€/è§’è‰²å…³ç³»/å‰§æƒ…è¿›åº¦
+ *   [Directives]    â€” å›ºå®šï¼šè¡Œä¸ºè§„åˆ™/è¯­æ°”/é™åˆ¶
+ *   [UserMessage]   â€” å¯å˜ï¼šç”¨æˆ·è¾“å…¥
  *
- * ½ûÖ¹ÔÚÄ£°åÖĞ¶¯Ì¬Æ´½Ó Prompt ½á¹¹¡£
+ * ç¦æ­¢åœ¨æ¨¡æ¿ä¸­åŠ¨æ€æ‹¼æ¥ Prompt ç»“æ„ã€‚
  */
 
-// ©¤©¤©¤ World System Prompt Template ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+// â”€â”€â”€ World System Prompt Template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function buildWorldSystemPrompt(ctx: WorldContext): string {
-  // Fixed header ¡ª cacheable
+  // Fixed header â€” cacheable
   const header = [
-    `[ÊÀ½ç] ${ctx.worldName}`,
-    `[ÀàĞÍ] ${ctx.worldType}`,
-    `[·ÕÎ§] ${ctx.atmosphere}`,
-    `[¹æÔò] ${ctx.rules}`,
-    `[½×²ã] ${ctx.hierarchy}`,
-    `[±³¾°] ${ctx.lore}`,
+    `[ä¸–ç•Œ] ${ctx.worldName}`,
+    `[ç±»å‹] ${ctx.worldType}`,
+    `[æ°›å›´] ${ctx.atmosphere}`,
+    `[è§„åˆ™] ${ctx.rules}`,
+    `[é˜¶å±‚] ${ctx.hierarchy}`,
+    `[èƒŒæ™¯] ${ctx.lore}`,
     ``,
-    `[³Æºô] ${ctx.addressMode}`,
-    `[ÈËÎï¹ØÏµ] ${ctx.relationship}`,
-    `[Ö÷Ïß³åÍ»] ${ctx.conflictMainline}`,
+    `[ç§°å‘¼] ${ctx.addressMode}`,
+    `[äººç‰©å…³ç³»] ${ctx.relationship}`,
+    `[ä¸»çº¿å†²çª] ${ctx.conflictMainline}`,
   ].join("\n");
 
-  // Current scene ¡ª variable but structurally consistent
+  // Current scene â€” variable but structurally consistent
   const activeNpcList = ctx.activeNpcs
-    .map((n) => `  - ${n.name}£¨${n.identity}£©`)
+    .map((n) => `  - ${n.name}ï¼ˆ${n.identity}ï¼‰`)
     .join("\n");
 
   const scene = [
     ``,
-    `[µ±Ç°»îÔ¾NPC]`,
-    activeNpcList || "  ÎŞ",
+    `[å½“å‰æ´»è·ƒNPC]`,
+    activeNpcList || "  æ— ",
     ``,
   ].join("\n");
 
-  // Current story node ¡ª variable
+  // Current story node â€” variable
   const nodeSection = ctx.currentNode
     ? [
-        `[µ±Ç°¾çÇé½Úµã] ${ctx.currentNode.title}`,
-        `[½ÚµãÃèÊö] ${ctx.currentNode.description}`,
-        `[Íê³ÉÌõ¼ş] ${ctx.currentNode.completionCondition}`,
+        `[å½“å‰å‰§æƒ…èŠ‚ç‚¹] ${ctx.currentNode.title}`,
+        `[èŠ‚ç‚¹æè¿°] ${ctx.currentNode.description}`,
+        `[å®Œæˆæ¡ä»¶] ${ctx.currentNode.completionCondition}`,
         ``,
       ].join("\n")
-    : `[µ±Ç°¾çÇé½Úµã] free exploration\n\n`;
+    : `[å½“å‰å‰§æƒ…èŠ‚ç‚¹] free exploration\n\n`;
 
-  // Fixed directives ¡ª cacheable
+  // Fixed directives â€” cacheable
   const directives = [
-    `[Ö¸Áî]`,
-    `1. ÄãÕıÔÚ°çÑİÒ»¸öÊÀ½çÖĞµÄËùÓĞ½ÇÉ«£¬¸ù¾İÉÏÏÂÎÄÑ¡Ôñ×îºÏÊÊµÄ½ÇÉ«·¢ÑÔ¡£`,
-    `2. ±£³ÖÊÀ½ç¹ÛÒ»ÖÂĞÔ£¬²»µÃÎ¥·´ÒÑÉè¶¨µÄ¹æÔòºÍ±³¾°¡£`,
-    `3. NPC ½öÔÚ´¥·¢Ìõ¼şÂú×ãÊ±½éÈë£¬²»Ö÷¶¯ÇÀ»°¡£`,
-    `4. µ±¾çÇé½ÚµãÍê³ÉÌõ¼şÂú×ãÊ±£¬×ÔÈ»µØÍÆ½øµ½ÏÂ¸ö½Úµã¡£`,
-    `5. »Ø¸´Ê¹ÓÃ${ctx.addressMode}£¬±£³Ö·ÕÎ§Îª${ctx.atmosphere}¡£`,
-    `6. ËùÓĞ½ÇÉ«¹²Ïí¶ÔÊÀ½ç¹æÔòºÍ¹ıÍùÊÂ¼şµÄÈÏÖª¡£`,
+    `[æŒ‡ä»¤]`,
+    `1. ä½ æ­£åœ¨æ‰®æ¼”ä¸€ä¸ªä¸–ç•Œä¸­çš„æ‰€æœ‰è§’è‰²ï¼Œæ ¹æ®ä¸Šä¸‹æ–‡é€‰æ‹©æœ€åˆé€‚çš„è§’è‰²å‘è¨€ã€‚`,
+    `2. ä¿æŒä¸–ç•Œè§‚ä¸€è‡´æ€§ï¼Œä¸å¾—è¿åå·²è®¾å®šçš„è§„åˆ™å’ŒèƒŒæ™¯ã€‚`,
+    `3. NPC ä»…åœ¨è§¦å‘æ¡ä»¶æ»¡è¶³æ—¶ä»‹å…¥ï¼Œä¸ä¸»åŠ¨æŠ¢è¯ã€‚`,
+    `4. å½“å‰§æƒ…èŠ‚ç‚¹å®Œæˆæ¡ä»¶æ»¡è¶³æ—¶ï¼Œè‡ªç„¶åœ°æ¨è¿›åˆ°ä¸‹ä¸ªèŠ‚ç‚¹ã€‚`,
+    `5. å›å¤ä½¿ç”¨${ctx.addressMode}ï¼Œä¿æŒæ°›å›´ä¸º${ctx.atmosphere}ã€‚`,
+    `6. æ‰€æœ‰è§’è‰²å…±äº«å¯¹ä¸–ç•Œè§„åˆ™å’Œè¿‡å¾€äº‹ä»¶çš„è®¤çŸ¥ã€‚`,
   ].join("\n");
 
   return [header, scene, nodeSection, directives].join("\n");
 }
 
-// ©¤©¤©¤ NPC Intervention Prompt Template ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+// â”€â”€â”€ NPC Intervention Prompt Template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function buildNpcInterventionPrompt(
   npc: { name: string; identity: string },
   trigger: string,
 ): string {
   return [
-    `[NPC½éÈë]`,
-    `Éí·İ: ${npc.name}£¨${npc.identity}£©`,
-    `´¥·¢Ìõ¼ş: ${trigger}`,
+    `[NPCä»‹å…¥]`,
+    `èº«ä»½: ${npc.name}ï¼ˆ${npc.identity}ï¼‰`,
+    `è§¦å‘æ¡ä»¶: ${trigger}`,
     ``,
-    `[Ö¸Áî]`,
-    `¸Ã NPC ÏÖÔÚĞèÒª½éÈëµ±Ç°¶Ô»°¡£ÇëÒÔ¸Ã NPC µÄÉí·İ·¢ÑÔ£¬`,
-    `±£³ÖÆäÉí·İÉè¶¨ºÍÊÀ½ç¹ÛÒ»ÖÂĞÔ¡£`,
+    `[æŒ‡ä»¤]`,
+    `è¯¥ NPC ç°åœ¨éœ€è¦ä»‹å…¥å½“å‰å¯¹è¯ã€‚è¯·ä»¥è¯¥ NPC çš„èº«ä»½å‘è¨€ï¼Œ`,
+    `ä¿æŒå…¶èº«ä»½è®¾å®šå’Œä¸–ç•Œè§‚ä¸€è‡´æ€§ã€‚`,
   ].join("\n");
 }
 
-// ©¤©¤©¤ Story Node Transition Template ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+// â”€â”€â”€ Story Node Transition Template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function buildNodeTransitionPrompt(
   prevNode: { title: string },
   nextNode: { title: string; description: string },
 ): string {
   return [
-    `[¾çÇéÍÆ½ø]`,
-    `ÉÏÒ»¸ö½Úµã¡¸${prevNode.title}¡¹ÒÑÍê³É¡£`,
-    `ĞÂ½Úµã¡¸${nextNode.title}¡¹ÒÑ½âËø¡£`,
+    `[å‰§æƒ…æ¨è¿›]`,
+    `ä¸Šä¸€ä¸ªèŠ‚ç‚¹ã€Œ${prevNode.title}ã€å·²å®Œæˆã€‚`,
+    `æ–°èŠ‚ç‚¹ã€Œ${nextNode.title}ã€å·²è§£é”ã€‚`,
     ``,
-    `[ĞÂ½ÚµãÃèÊö]`,
+    `[æ–°èŠ‚ç‚¹æè¿°]`,
     nextNode.description,
     ``,
-    `[Ö¸Áî]`,
-    `×ÔÈ»µØÍ¨¹ı¶Ô»°»òĞğÊö¹ı¶Éµ½ĞÂ¾çÇé½Úµã¡£`,
-    `ÈÃ¹ı¶ÉÁ÷³©£¬²»ÒªÉúÓ²µØĞû²¼"ĞÂµÄÕÂ½Ú¿ªÊ¼ÁË"¡£`,
+    `[æŒ‡ä»¤]`,
+    `è‡ªç„¶åœ°é€šè¿‡å¯¹è¯æˆ–å™è¿°è¿‡æ¸¡åˆ°æ–°å‰§æƒ…èŠ‚ç‚¹ã€‚`,
+    `è®©è¿‡æ¸¡æµç•…ï¼Œä¸è¦ç”Ÿç¡¬åœ°å®£å¸ƒ"æ–°çš„ç« èŠ‚å¼€å§‹äº†"ã€‚`,
   ].join("\n");
 }
 
-// ©¤©¤©¤ Full World Prompt (for chat pipeline injection) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+// â”€â”€â”€ Full World Prompt (for chat pipeline injection) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function buildWorldPrompt(params: {
   world: WorldContext;
@@ -116,14 +116,14 @@ export function buildWorldPrompt(params: {
   const systemPrompt = buildWorldSystemPrompt(params.world);
 
   const characterSection = [
-    `[µ±Ç°°çÑİ½ÇÉ«]`,
-    `Ãû³Æ: ${params.character.name}`,
-    `ÈËÉè: ${params.character.persona}`,
-    `¹ØÏµ: ºÃ¸Ğ${params.relationship.affection.toString()} ĞÅÈÎ${params.relationship.trust.toString()} Ç×ÃÜ${params.relationship.intimacy.toString()}`,
+    `[å½“å‰æ‰®æ¼”è§’è‰²]`,
+    `åç§°: ${params.character.name}`,
+    `äººè®¾: ${params.character.persona}`,
+    `å…³ç³»: å¥½æ„Ÿ${params.relationship.affection.toString()} ä¿¡ä»»${params.relationship.trust.toString()} äº²å¯†${params.relationship.intimacy.toString()}`,
   ].join("\n");
 
   const memorySection = params.memoryContext
-    ? `\n[¼ÇÒäÉÏÏÂÎÄ]\n${params.memoryContext}`
+    ? `\n[è®°å¿†ä¸Šä¸‹æ–‡]\n${params.memoryContext}`
     : "";
 
   const worldPrompt = [characterSection, memorySection].join("\n");

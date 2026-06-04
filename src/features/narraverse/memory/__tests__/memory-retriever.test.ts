@@ -10,23 +10,23 @@ describe("retrieveMemories", () => {
 
     await store.addEpisodic({
       id: "ep1", userId: "u1", characterId: "c1",
-      eventType: "conversation", content: "ÁÄÁË¹ØÓÚÎ´À´µÄ¼Æ»®",
+      eventType: "conversation", content: "èŠäº†å…³äºæœªæ¥çš„è®¡åˆ’",
       importance: 0.8, createdAt: Date.now() - 1000,
     });
     await store.addEpisodic({
       id: "ep2", userId: "u1", characterId: "c1",
-      eventType: "emotional_shift", content: "½ÇÉ«Á÷Â¶³ö±¯ÉË",
+      eventType: "emotional_shift", content: "è§’è‰²æµéœ²å‡ºæ‚²ä¼¤",
       importance: 0.3, createdAt: Date.now() - 10000000,
     });
     await store.addEpisodic({
       id: "ep3", userId: "u2", characterId: "c1",
-      eventType: "conversation", content: "ÆäËûÈË",
+      eventType: "conversation", content: "å…¶ä»–äºº",
       importance: 0.5, createdAt: Date.now(),
     });
 
     await store.addPromise({
       id: "p1", userId: "u1", characterId: "c1",
-      direction: "character_to_user", content: "ÎÒ»á±£»¤Äã",
+      direction: "character_to_user", content: "æˆ‘ä¼šä¿æŠ¤ä½ ",
       status: "active", importance: 0.9, createdAt: Date.now() - 5000,
       resolvedAt: null,
     });
@@ -78,7 +78,7 @@ describe("retrieveMemories", () => {
   it("scores by relevance when query is provided", async () => {
     const result = await retrieveMemories(store, {
       userId: "u1",
-      query: "±£»¤",
+      query: "ä¿æŠ¤",
     });
     expect(result.memories.length).toBeGreaterThan(0);
     expect(result.memories[0].memory.kind).toBe("promise");

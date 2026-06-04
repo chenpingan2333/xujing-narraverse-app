@@ -3,7 +3,7 @@ import { CreateCharacterRequest } from "../../characters/types.js";
 import { AuthContext } from "../types.js";
 
 /**
- * User access control tests ¡ª verifies that userId always comes from
+ * User access control tests â€” verifies that userId always comes from
  * server-side session and cannot be spoofed via client body.
  */
 describe("User Access Control", () => {
@@ -33,6 +33,10 @@ describe("User Access Control", () => {
         updatedAt: new Date(),
         isVip: false,
         isBanned: false, isAdmin: false,
+    membershipTier: null,
+    membershipExpireAt: null,
+    uidDisplay: null,
+    firstVipPurchaseAt: null,
       },
     };
     expect(ctx.userId).toBe("session-user-123");

@@ -1,20 +1,6 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE } from "@/features/narraverse/auth/types";
 
-/**
- * Middleware: protect routes and validate invite access.
- *
- * Public routes (no auth required):
- *   /, /api/auth/*, /api/invite/*, /invite-waiting, /login, /_next/*, /favicon.ico
- *
- * Invite-protected (auth + invite required):
- *   /chat, /worlds, /characters, /api/chat
- *
- * Flow:
- *   unauthenticated → /login?redirect=<original>
- *   authenticated, no invite → /invite-waiting?redirect=<original>
- *   authenticated, invited → normal access
- */
 const PUBLIC_PATHS = [
   "/api/auth",
   "/api/invite",
@@ -24,28 +10,37 @@ const PUBLIC_PATHS = [
   "/login",
 ];
 const INVITE_PROTECTED = ["/chat", "/worlds", "/characters", "/api/chat"];
+const NO_INVITE_PATHS = ["/membership", "/api/membership", "/profile", "/api/profile", "/api/wallet", "/marketplace", "/api/marketplace", "/api/characters/my", "/recharge", "/api/recharge", "/admin", "/api/admin"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Allow public paths
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) return NextResponse.next();
 
-  // Allow home page
   if (pathname === "/") return NextResponse.next();
 
-  // Check for session cookie
   const sessionToken = req.cookies.get(SESSION_COOKIE)?.value;
+
+  // Membership paths: require auth but no invite gate
+  if (NO_INVITE_PATHS.some((p) => pathname.startsWith(p))) {
+    if (!sessionToken) {
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
+
   if (!sessionToken) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Invite gating: redirect invite-protected paths to invite-waiting.
-  // The invite-waiting page checks /api/invite/status and either shows
-  // the invite form or redirects to the original target if already invited.
-  const needsInvite = INVITE_PROTECTED.some((p) => pathname.startsWith(p));
+  const requireInvite = process.env.REQUIRE_INVITE !== "false";
+  const needsInvite = requireInvite && INVITE_PROTECTED.some((p) =>
+    pathname.startsWith(p)
+  );
   if (needsInvite) {
     const inviteUrl = new URL("/invite-waiting", req.url);
     inviteUrl.searchParams.set("redirect", pathname);

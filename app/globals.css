@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════ */
 
 * { box-sizing: border-box; }
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; }
 body {
   font-family: "Georgia", "Noto Serif SC", "Songti SC", "SimSun", serif;
   -webkit-font-smoothing: antialiased;
@@ -279,3 +279,6 @@ body.keyboard-open .chat-input-area {
     max-width: 85vw !important;
   }
 }
+
+/* ─── Page-level scroll control ─── */
+.page-scroll { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }

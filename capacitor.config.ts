@@ -1,10 +1,10 @@
-Ôªøimport type { CapacitorConfig } from "@capacitor/cli";
+import type { CapacitorConfig } from "@capacitor/cli";
 
-const PROD_URL = process.env["NARRAVERSE_URL"] ?? "https://narraverse.vercel.app";
+const PROD_URL = process.env["NARRAVERSE_URL"] ?? "https://xujing-narraverse-app.vercel.app";
 
 const config: CapacitorConfig = {
   appId: "ai.narraverse.app",
-  appName: "ÂèôÂ¢É",
+  appName: "–æ≥",
   webDir: "out",
 
   // Production: load from deployed URL

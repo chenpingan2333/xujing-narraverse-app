@@ -4,6 +4,7 @@ import { onboardingService } from "@/features/narraverse/onboarding/service";
 import { FIRST_MESSAGE_REWARD } from "@/features/narraverse/onboarding/types";
 import { analytics, AnalyticsEvent } from "@/features/narraverse/analytics/events";
 import { InMemoryStore } from "@/features/narraverse/memory/memory-store.testdoubles";
+import { TieredMemoryStore } from "@/features/narraverse/memory/index.js";
 import { InMemoryChatRepository } from "@/features/narraverse/chat/chat.repository";
 import { runChat } from "@/features/narraverse/chat/chat.runtime";
 import { InMemoryApiKeyRepository, InMemoryUsageRepository } from "@/features/narraverse/provider/provider.repos";
@@ -13,6 +14,7 @@ import { DeepSeekProvider } from "@/features/narraverse/provider/providers/provi
 import type { ProviderId, LLMProvider } from "@/features/narraverse/provider/provider.types";
 import { STAR_DIAMOND_RATE } from "@/features/narraverse/payment/payment.types";
 import { buildPersonaFingerprint } from "@/features/narraverse/persona/persona.builder";
+import { userQuotaService, AD_TURN_INTERVAL, AD_REWARD_CONVERSATION, AdCooldownError } from "@/features/narraverse/user/quota";
 import { buildFinalSystemPrompt } from "@/features/narraverse/chat/system-prompt-builder";
 
 function buildGateway(): ProviderGateway {
@@ -74,9 +76,11 @@ export async function POST(req: NextRequest) {
 
     // Auth: override userId from session (prevents client-side spoofing)
     let effectiveUserId = userId;
+    let effectiveIsVip = isVip ?? false;
     try {
       const authCtx = await requireAuth();
       effectiveUserId = authCtx.userId;
+      effectiveIsVip = authCtx.user.isVip;
     } catch {
       // Allow unauthenticated for dev (production uses middleware redirect)
     }
@@ -84,7 +88,23 @@ export async function POST(req: NextRequest) {
 
 
     // ── Onboarding: check first-time state ──
-    const onboardingState = onboardingService.getOrCreate(effectiveUserId);
+    // ── P0-2: Ad trigger check ──
+    const adWatched = body._adWatched === true;
+    if (!adWatched) {
+      const needsAd = await userQuotaService.needsAdForConversation(effectiveUserId, effectiveIsVip);
+      if (needsAd) {
+        return NextResponse.json({
+          _adRequired: true,
+          _adType: "conversation_continue",
+          _adReward: AD_REWARD_CONVERSATION,
+          _currentTurns: await userQuotaService.getConversationTurns(effectiveUserId),
+        }, { status: 200 });
+      }
+    } else {
+      try { await userQuotaService.logAdWatch(effectiveUserId, "conversation_continue"); } catch (e) { if (e instanceof AdCooldownError) { return NextResponse.json({ _adCooldown: true, _remainingSeconds: e.remainingSeconds }, { status: 200 }); } throw e; }
+    }
+
+        const onboardingState = onboardingService.getOrCreate(effectiveUserId);
     const isFirstMessage = onboardingState.isFirstTime && !onboardingState.firstMessageSent;
 
     const charInfo = DEFAULT_CHARACTERS[characterId] ?? { name: "角色", persona: "A helpful companion" };
@@ -99,7 +119,8 @@ export async function POST(req: NextRequest) {
       relationshipIntimacy: 50,
     });
 
-    const memoryStore = new InMemoryStore();
+    const baseMemoryStore = new InMemoryStore();
+    const memoryStore = new TieredMemoryStore(baseMemoryStore, () => effectiveIsVip);
     const chatRepository = new InMemoryChatRepository();
     const providerGateway = buildGateway();
 
@@ -128,7 +149,7 @@ export async function POST(req: NextRequest) {
           character: { id: characterId, userId: effectiveUserId, name: charInfo.name, persona: charInfo.persona, description: "", config: {} },
           relationship: { userId: effectiveUserId, characterId, affection: 50, trust: 50, intimacy: 50, status: "active" },
           includeLiveness: false,
-          isVip: isVip ?? false,
+          isVip: effectiveIsVip,
         });
         return {
           systemPrompt: result.systemPrompt,
@@ -146,13 +167,17 @@ export async function POST(req: NextRequest) {
     const effectiveMessage = isFirstMessage
       ? "[这是你们第一次对话。请用温柔、略带好奇的语气主动向对方打招呼，简单介绍自己，并邀请对方说说想聊什么。你的回答应该让人感到安心和被期待。]\n\n" + message
       : message;
+    const effectiveIsVipForRuntime = effectiveIsVip;
     const result = await runChat(
       { characterService, relationshipService, promptBuilder, providerGateway, memoryStore, chatRepository },
       { userId: effectiveUserId, characterId, message: effectiveMessage, sessionId: sessionId ?? `sess-${Date.now()}`, isVip: isVip ?? false, characterTier, worldTier },
     );
 
 
-    // ── First engagement reward ──
+    // ── Increment conversation turns ──
+    await userQuotaService.increment(effectiveUserId, "conversation_turn");
+
+        // ── First engagement reward ──
     let boostedDelta = result.relationshipDelta;
     if (isFirstMessage && onboardingService.isEligibleForFirstReward(effectiveUserId)) {
       boostedDelta = {
@@ -174,12 +199,14 @@ export async function POST(req: NextRequest) {
     const inputTokens = result.metadata?.inputTokens ?? 0;
     const outputTokens = result.metadata?.outputTokens ?? 0;
     const starCost = Math.max(1, Math.ceil((inputTokens + outputTokens) / STAR_DIAMOND_RATE));
+    const currentTurns = await userQuotaService.getConversationTurns(effectiveUserId);
+    const turnsUntilNextAd = AD_TURN_INTERVAL - (currentTurns % AD_TURN_INTERVAL);
 
     return NextResponse.json({
       reply: result.assistantMessage,
       relationshipDelta: boostedDelta,
       memoryEvents: result.memoryEvents,
-      metadata: { ...result.metadata, starCost, isFirstMessage, onboardingComplete: onboardingState.currentStep === "complete" || (isFirstMessage && onboardingService.isEligibleForFirstReward(effectiveUserId)) },
+      metadata: { ...result.metadata, starCost, isFirstMessage, onboardingComplete: onboardingState.currentStep === "complete" || (isFirstMessage && onboardingService.isEligibleForFirstReward(effectiveUserId)), conversationTurns: currentTurns, turnsUntilNextAd },
     });
   } catch (err) {
     console.error("Chat API error:", err instanceof Error ? err.message.slice(0, 200) : String(err).slice(0, 200));

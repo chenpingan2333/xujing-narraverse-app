@@ -9,7 +9,7 @@ const simpleInput = {
   simple: {
     worldType: "fantasy" as const,
     relationship: "allies",
-    addressMode: "Äã",
+    addressMode: "ä½ ",
     conflictMainline: "Defeat the dark lord",
   },
 };
@@ -45,10 +45,10 @@ describe("updateWorldSimple", () => {
   it("updates simple fields", () => {
     const world = createWorld(simpleInput);
     const updated = updateWorldSimple(world, {
-      addressMode: "Äú",
+      addressMode: "æ‚¨",
       conflictMainline: "New conflict",
     });
-    expect(updated.simple.addressMode).toBe("Äú");
+    expect(updated.simple.addressMode).toBe("æ‚¨");
     expect(updated.simple.conflictMainline).toBe("New conflict");
     expect(updated.simple.worldType).toBe("fantasy"); // unchanged
   });

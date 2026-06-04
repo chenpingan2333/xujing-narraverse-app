@@ -67,8 +67,7 @@ export class NarraverseRouter implements ModelRouter {
     switch (providerName) {
       case "deepseek":
         return process.env["DEEPSEEK_MODEL"] ?? "deepseek-chat";
-      case "grok":
-        return process.env["GROK_MODEL"] ?? "grok-4-fast";
+      case "grok": return process.env["DEEPSEEK_MODEL"] ?? "deepseek-chat";
       default:
         return "unknown";
     }

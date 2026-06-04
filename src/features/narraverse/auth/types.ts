@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 // ─── User ─────────────────────────────────────────────────────────────────
 export interface User {
@@ -9,6 +9,10 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   isVip: boolean;
+  membershipTier: string | null;    // "monthly" | "quarterly" | "yearly"
+  membershipExpireAt: string | null;
+  uidDisplay: string | null;
+  firstVipPurchaseAt: string | null;
   isBanned: boolean;
   isAdmin: boolean;
 }

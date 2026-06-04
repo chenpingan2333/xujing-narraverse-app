@@ -9,7 +9,7 @@ const mk = (name: string, persona: string) => ({
   name, persona, description: "", tier: "basic" as const, avatar: "?", worldId: null as string | null,
 });
 
-describe("Beta Flow ¡ª Invite ¡ú Character ¡ú First Chat", () => {
+describe("Beta Flow â€” Invite â†’ Character â†’ First Chat", () => {
   const TEST_USER = "beta-user-1";
 
   beforeEach(() => {
@@ -100,7 +100,7 @@ describe("Beta Flow ¡ª Invite ¡ú Character ¡ú First Chat", () => {
   });
 });
 
-describe("Beta Flow ¡ª Edge Cases", () => {
+describe("Beta Flow â€” Edge Cases", () => {
   const TEST_USER = "beta-edge-user";
 
   beforeEach(() => {

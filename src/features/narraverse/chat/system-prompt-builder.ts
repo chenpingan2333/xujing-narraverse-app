@@ -1,4 +1,4 @@
-﻿/**
+/**
  * buildFinalSystemPrompt — unified prompt builder for 叙境 (Xujing).
  *
  * Merges 5 previously-separate prompt layers into a single, token-efficient
@@ -182,7 +182,7 @@ function buildLivenessSection(
 // ===========================================================================
 
 function estimateTokenCount(text: string): number {
-  const chineseChars = (text.match(/[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]/g) ?? []).length;
-  const otherChars = (text.match(/[^\u4e00-\u9fff\u3000-\u303f\uff00-\uffef\s]/g) ?? []).length;
+  const chineseChars = (text.match(/[一-鿿　-〿＀-￯]/g) ?? []).length;
+  const otherChars = (text.match(/[^一-鿿　-〿＀-￯\s]/g) ?? []).length;
   return Math.ceil(chineseChars * 1.3 + otherChars * 0.3);
 }

@@ -1,4 +1,4 @@
-﻿import type { PersonaFingerprint } from "./persona.types.js";
+import type { PersonaFingerprint } from "./persona.types.js";
 
 /**
  * PersonaInjector — converts a PersonaFingerprint into a stable,
@@ -115,7 +115,7 @@ function describeTrait(value: number, high: string, low: string): string {
  */
 export function estimateInjectionTokens(fp: PersonaFingerprint): number {
   const text = injectPersona(fp, { intimacy: 50 });
-  const chineseChars = (text.match(/[\u4e00-\u9fff]/g) ?? []).length;
+  const chineseChars = (text.match(/[一-鿿]/g) ?? []).length;
   const englishWords = (text.match(/[a-zA-Z]+/g) ?? []).length;
   return Math.ceil(chineseChars * 1.3 + englishWords);
 }

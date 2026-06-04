@@ -146,7 +146,7 @@ export async function runChat(
       sessionId,
       modelId: gatewayResponse.model,
       provider: gatewayResponse.id.includes("deepseek") ? "deepseek"
-        : gatewayResponse.id.includes("grok") ? "grok"
+        : gatewayResponse.id.includes("deepseek") ? "deepseek"
         : gatewayResponse.id.includes("openai") ? "openai"
         : "custom",
       tier: isVip ? "vip" : "free",

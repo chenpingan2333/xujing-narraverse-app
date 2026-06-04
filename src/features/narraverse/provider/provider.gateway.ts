@@ -91,8 +91,8 @@ export class ProviderGateway {
     const request: ChatRequest = {
       model: effectiveModel,
       messages,
-      temperature: temperature ?? 0.7,
-      maxTokens: maxTokens ?? 4096,
+      temperature: temperature ?? 0.6,
+      maxTokens: maxTokens ?? 1024,
       stream: false,
     };
 

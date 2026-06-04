@@ -1,4 +1,4 @@
-﻿// Types & schemas
+// Types & schemas
 export {
   EventType,
   PromiseStatus,
@@ -31,6 +31,9 @@ export { PostgresMemoryStore } from "./memory-store.postgres.js";
 
 // Schema migrations
 export { runMigrations } from "./schema.js";
+
+// Tiered memory store — enforces VIP-based limits
+export { TieredMemoryStore } from "./memory-store.tiered.js";
 
 // In-memory store — test doubles only, never for production
 export { InMemoryStore } from "./memory-store.testdoubles.js";

@@ -5,11 +5,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Layout, Input, Button, Card, Typography, Tag, Drawer, List, Avatar, Badge } from "antd";
 import {
   SendOutlined, UserOutlined, RobotOutlined, MenuOutlined,
-  HeartOutlined, LeftOutlined, BookOutlined, WalletOutlined, EditOutlined,
+  HeartOutlined, BookOutlined, WalletOutlined, EditOutlined, CrownOutlined,
 } from "@ant-design/icons";
 import { buildRelationshipUIModel, getWarmthGradient, getTrendEmoji } from "../relationship/ui-model";
 import { usePurchaseReaction } from "../ui/purchase-reaction";
 import DiamondAnimation from "../ui/diamond-animation";
+import AdInterstitial from "../ui/ad-interstitial";
 
 const { TextArea } = Input;
 const { Title, Text, Paragraph } = Typography;
@@ -65,6 +66,13 @@ function ChatPageInner() {
   const [diamondAnim, setDiamondAnim] = useState(false);
   const [onboardingState, setOnboardingState] = useState<{ currentStep: string; isFirstTime: boolean; firstMessageSent: boolean; rewardClaimed: boolean } | null>(null);
 
+  const [adOpen, setAdOpen] = useState(false);
+  const [adReward, setAdReward] = useState(0);
+  const [adPending, setAdPending] = useState(false);
+  const [adPendingMessage, setAdPendingMessage] = useState("");
+  const [conversationTurns, setConversationTurns] = useState(0);
+  const [userIsVip, setUserIsVip] = useState(false);
+
   // Relationship state with trend detection
   const [relAffection, setRelAffection] = useState(50);
   const [relTrust, setRelTrust] = useState(50);
@@ -99,6 +107,12 @@ function ChatPageInner() {
       if (data.onboarding) setOnboardingState(data.onboarding);
     }).catch(() => {});
   }, [userId]);
+
+  useEffect(() => {
+    fetch("/api/auth/session/me").then((r) => r.json()).then((data) => {
+      if (data.user?.isVip) setUserIsVip(true);
+    }).catch(() => {});
+  }, []);
 
   const relModel = useMemo(() => buildRelationshipUIModel(relAffection, relTrust, relIntimacy, prevTemp), [relAffection, relTrust, relIntimacy, prevTemp]);
 
@@ -142,7 +156,7 @@ function ChatPageInner() {
     try {
       const res = await fetch("/api/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: userId || "anon", characterId, message: text, sessionId, isVip: true, worldId, worldTier: "basic", worldType }),
+        body: JSON.stringify({ userId: userId || "anon", characterId, message: text, sessionId, isVip: userIsVip, worldId, worldTier: "basic", worldType }),
       });
       const data = await res.json();
 
@@ -166,6 +180,10 @@ function ChatPageInner() {
       setTimeout(() => typewriterEffect(replyText, aid), typeDelay);
 
       setMetadata(data.metadata);
+      if (data.metadata?.conversationTurns) {
+        setConversationTurns(data.metadata.conversationTurns);
+      }
+      setAdPending(false);
       if (data.metadata?.isFirstMessage && data.metadata?.onboardingComplete) {
         setOnboardingState((prev) => prev ? { ...prev, firstMessageSent: true, rewardClaimed: true } : null);
       }
@@ -384,7 +402,7 @@ function ChatPageInner() {
       {/* Left sidebar */}
       <div className="chat-left-sidebar" style={{ width: 210, flexShrink: 0, background: "#fdf8f0", borderRight: "1px solid #ead9c0", overflow: "auto" }}>
         <div style={{ padding: "14px 18px", borderBottom: "1px solid #ead9c0" }}>
-          <Button type="text" icon={<LeftOutlined />} onClick={() => router.push("/")}
+          <Button type="text" icon={<UserOutlined />} onClick={() => router.push("/profile")}
             style={{ color: "#B08968", fontFamily: "'Georgia','Noto Serif SC',serif", fontWeight: 400 }}>\u53d9\u5883</Button>
         </div>
         {characterList}
@@ -394,7 +412,7 @@ function ChatPageInner() {
       <Layout style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, background: "#fffaf5" }}>
         <Header style={{ height: 54, lineHeight: "54px", padding: "0 18px", background: "#fdf8f0", borderBottom: "1px solid #ead9c0", display: "flex", alignItems: "center", gap: 12 }}>
           <Button type="text" icon={<MenuOutlined />} onClick={() => setMobileDrawer(true)} style={{ color: "#B08968" }} className="chat-mobile-menu" />
-          <Button type="text" icon={<LeftOutlined />} onClick={() => router.push("/characters")} style={{ color: "#B08968" }} className="chat-mobile-back" />
+          <Button type="text" icon={<UserOutlined />} onClick={() => router.push("/profile")} style={{ color: "#B08968" }} className="chat-mobile-back" />
           <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
             <Title level={5} style={{ margin: 0, color: "#5C4033", fontSize: 16, fontWeight: 400, fontFamily: "'Georgia','Noto Serif SC',serif", whiteSpace: "nowrap" }}>{characterName}</Title>
             {worldName ? (
@@ -407,6 +425,12 @@ function ChatPageInner() {
               </Tag>
             )}
           </div>
+          {!userIsVip && (
+            <Button type="link" icon={<CrownOutlined />} onClick={() => router.push("/membership")} style={{ color: "#e8965e", fontSize: 13, padding: "0 8px", marginRight: 8 }}>VIP</Button>
+          )}
+          {!userIsVip && conversationTurns > 0 && (
+            <Text style={{ color: "#B08968", fontSize: 11, marginRight: 12 }}>第{conversationTurns}轮</Text>
+          )}
           <Badge count={starBalance} showZero color="#f0a860" overflowCount={999} style={{ fontSize: 10 }}>
             <WalletOutlined style={{ color: "#B08968", fontSize: 17 }} />
           </Badge>

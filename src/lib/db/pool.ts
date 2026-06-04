@@ -10,6 +10,7 @@ export function getPool(): Pool {
       database: process.env["DB_NAME"] ?? "narraverse",
       user: process.env["DB_USER"] ?? "narraverse",
       password: process.env["DB_PASSWORD"] ?? "narraverse",
+      ssl: process.env["DB_HOST"]?.includes("neon.tech") ? { rejectUnauthorized: false } : false,
       max: 20,
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,

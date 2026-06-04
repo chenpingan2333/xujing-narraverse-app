@@ -1,4 +1,4 @@
-﻿import { cookies } from "next/headers";
+import { cookies } from "next/headers";
 import { queryOne, query } from "@/lib/db/pool";
 import { sha256, generateSessionToken } from "@/lib/auth/crypto";
 import {
@@ -27,11 +27,11 @@ export async function validateSession(token: string): Promise<AuthContext | null
 
   const row = await queryOne<{
     session_id: string; user_id: string; expires_at: string;
-    email: string | null; name: string; avatar_url: string | null;
+    email: string | null; name: string; avatar_url: string | null; membership_tier: string | null; membership_expire_at: string | null; uid_display: string | null; first_vip_purchase_at: string | null;
     is_vip: boolean; is_banned: boolean; is_admin: boolean;
   }>(
     `SELECT s.id AS session_id, s.user_id, s.expires_at,
-            u.email, u.name, u.avatar_url, u.is_vip, u.is_banned, u.is_admin
+            u.email, u.name, u.avatar_url, u.is_vip, u.is_banned, u.is_admin, u.membership_tier, u.membership_expire_at, u.uid_display, u.first_vip_purchase_at
      FROM sessions s
      JOIN users u ON u.id = s.user_id
      WHERE s.token_hash = $1 AND s.expires_at > now() AND u.is_banned = false`,
@@ -57,6 +57,10 @@ export async function validateSession(token: string): Promise<AuthContext | null
       createdAt: new Date(),
       updatedAt: new Date(),
       isVip: row.is_vip,
+      membershipTier: row.membership_tier ?? null,
+      membershipExpireAt: row.membership_expire_at ?? null,
+      uidDisplay: row.uid_display ?? null,
+      firstVipPurchaseAt: row.first_vip_purchase_at ?? null,
       isBanned: row.is_banned,
       isAdmin: row.is_admin,
     },
