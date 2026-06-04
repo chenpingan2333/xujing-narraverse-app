@@ -64,7 +64,7 @@ jobs:
         run: npx cap sync
 
       - name: Build Android Release APK
-        run: cd android && ./gradlew assembleRelease
+        run: cd android && chmod +x gradlew && ./gradlew assembleRelease
 
       - name: Get version
         id: version
@@ -97,3 +97,4 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+
