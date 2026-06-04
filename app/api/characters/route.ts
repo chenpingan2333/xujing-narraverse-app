@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth/session";
 import { query, queryOne } from "@/lib/db/pool";
 import { userQuotaService, FREE_CHARACTER_LIMIT, AD_REWARD_CHARACTER, AdCooldownError } from "@/features/narraverse/user/quota";
@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     const authCtx = await requireAuth();
     const userId = authCtx.userId;
 
-    const rows = await query<{
+    let rows = await query<{
       id: string; name: string; persona: string; description: string;
       tier: string; avatar: string; world_id: string | null;
       is_active: boolean; created_at: string;
@@ -16,6 +16,24 @@ export async function GET(req: NextRequest) {
       "SELECT id, name, persona, description, tier, avatar, world_id, is_active, created_at FROM characters WHERE user_id = $1 AND is_active = true ORDER BY created_at DESC",
       [userId]
     );
+
+    if (rows.length === 0) {
+      var defaults = [
+        { n: '艾琳', p: '温柔体贴的邻家女孩，喜欢分享日常生活中的小确幸', a: '🌸' },
+        { n: '雷恩', p: '勇敢正直的冒险者，总能在危险中保护你', a: '⚔️' },
+        { n: '墨夜', p: '神秘高冷的剑客，话不多但每句都有深意', a: '🌙' },
+      ];
+      var seeded = [];
+      for (var _i = 0; _i < defaults.length; _i++) {
+        var d = defaults[_i];
+        var r = await queryOne(
+          'INSERT INTO characters (user_id, name, persona, description, tier, avatar) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+          [userId, d.n, d.p, '', 'basic', d.a]
+        );
+        if (r) seeded.push(r);
+      }
+      rows.splice(0, rows.length, ...(seeded as any));
+    }
 
     return NextResponse.json(rows.map((r) => ({
       id: r.id,
