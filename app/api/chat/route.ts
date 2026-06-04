@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth/session";
 import { onboardingService } from "@/features/narraverse/onboarding/service";
 import { FIRST_MESSAGE_REWARD } from "@/features/narraverse/onboarding/types";
@@ -169,9 +169,7 @@ export async function GET() {
     // ── First-time message injection ──
     // ── First-time message injection ──
     const effectiveMessage = isFirstMessage
-      ? "[这是你们第一次对话。请用温柔、略带好奇的语气主动向对方打招呼，简单介绍自己，并邀请对方说说想聊什么。你的回答应该让人感到安心和被期待。]
-
-" + message
+      ? "[这是你们第一次对话。请用温柔、略带好奇的语气主动向对方打招呼，简单介绍自己，并邀请对方说说想聊什么。你的回答应该让人感到安心和被期待。]\n\n" + message
       : message;
     const effectiveIsVipForRuntime = effectiveIsVip;
     const result = await runChat(
