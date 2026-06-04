@@ -15,14 +15,14 @@ android {
         }
     }
 
-    // Release signing â€” uses keystore.properties file
+    // Release signing â€?uses keystore.properties file
     signingConfigs {
         release {
             def keystorePropsFile = rootProject.file("keystore.properties")
             if (keystorePropsFile.exists()) {
                 def props = new Properties()
                 props.load(new FileInputStream(keystorePropsFile))
-                storeFile file(props['storeFile'])
+                storeFile rootProject.file(props['storeFile'])
                 storePassword props['storePassword']
                 keyAlias props['keyAlias']
                 keyPassword props['keyPassword']
