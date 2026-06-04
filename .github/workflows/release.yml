@@ -68,20 +68,9 @@ jobs:
           sed -i 's|<string name="app_name">.*</string>|<string name="app_name">XuJing</string>|' android/app/src/main/res/values/strings.xml
           sed -i 's|<string name="title_activity_main">.*</string>|<string name="title_activity_main">XuJing</string>|' android/app/src/main/res/values/strings.xml
 
-      - name: Generate app icon (after cap sync)
+      - name: Restore app icon (cap sync overwrites mipmap)
         run: |
-          for size in 48 72 96 144 192; do
-            case $size in
-              48) dir="mipmap-mdpi" ;;
-              72) dir="mipmap-hdpi" ;;
-              96) dir="mipmap-xhdpi" ;;
-              144) dir="mipmap-xxhdpi" ;;
-              192) dir="mipmap-xxxhdpi" ;;
-            esac
-            mkdir -p "android/app/src/main/res/$dir"
-            convert icon.png -resize ${size}x${size} "android/app/src/main/res/$dir/ic_launcher.png"
-            cp "android/app/src/main/res/$dir/ic_launcher.png" "android/app/src/main/res/$dir/ic_launcher_round.png"
-          done
+          cp -r resources/android/icon/* android/app/src/main/res/
 
       - name: Build Android Release APK
         run: cd android && chmod +x gradlew && ./gradlew assembleRelease
@@ -123,4 +112,6 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+
+
 
