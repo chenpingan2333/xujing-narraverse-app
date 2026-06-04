@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { queryOne, query } from "@/lib/db/pool";
 import { createSession, setSessionCookie } from "@/lib/auth/session";
 
@@ -67,9 +67,15 @@ export async function GET(req: NextRequest) {
     }
 
     const token = await createSession(userId);
-    await setSessionCookie(token);
-
-    return NextResponse.redirect(new URL("/chat", req.url));
+    const redirectRes = NextResponse.redirect(new URL("/chat", req.url));
+    redirectRes.cookies.set("narraverse_session", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60,
+    });
+    return redirectRes;
   } catch (err) {
     console.error("GitHub callback error:", err instanceof Error ? err.message.slice(0, 200) : String(err).slice(0, 200));
     return NextResponse.redirect(new URL("/?error=github_auth_failed", req.url));
