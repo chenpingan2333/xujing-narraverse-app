@@ -1,7 +1,6 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { queryOne, query } from "@/lib/db/pool";
-import { createSession } from "@/lib/auth/session";
-import { SESSION_COOKIE, SESSION_TTL_MS } from "@/features/narraverse/auth/types";
+import { createSession, setSessionCookie, clearSessionCookie } from "@/lib/auth/session";
 import { cookies } from "next/headers";
 
 const GITHUB_CLIENT_ID = process.env["GITHUB_CLIENT_ID"] ?? "";
@@ -79,19 +78,17 @@ export async function GET(req: NextRequest) {
     }
 
     const token = await createSession(userId);
-    const isProduction = process.env["NODE_ENV"] === "production";
-    const secureFlag = isProduction ? "; Secure" : "";
-    const cookieValue = SESSION_COOKIE + "=" + token + "; HttpOnly" + secureFlag + "; SameSite=Lax; Path=/; Max-Age=" + (SESSION_TTL_MS / 1000);
 
-    // Clear oauth_state cookie and set session cookie via HTML page
+    // Use Next.js cookie API for proper session handling
+    await setSessionCookie(token);
+    const cookieStore = await cookies();
+    cookieStore.delete("oauth_state");
+
     return new NextResponse(
       '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=/chat"></head><body><script>location.href="/chat"</script></body></html>',
       {
         status: 200,
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-          "Set-Cookie": cookieValue + ", oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0",
-        },
+        headers: { "Content-Type": "text/html; charset=utf-8" },
       }
     );
   } catch (err) {

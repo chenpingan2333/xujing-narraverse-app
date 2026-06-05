@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth/session";
 import { onboardingService } from "@/features/narraverse/onboarding/service";
 import { FIRST_MESSAGE_REWARD } from "@/features/narraverse/onboarding/types";

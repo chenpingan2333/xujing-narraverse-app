@@ -9,11 +9,26 @@ import BottomNav from "../components/navigation/BottomNav";
 export default function HomePage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
+  const [authed, setAuthed] = useState<boolean | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 400);
     return () => clearTimeout(t);
   }, []);
+
+  // Check auth state — redirect unauthenticated users to login
+  useEffect(() => {
+    fetch("/api/auth/session/me")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => setAuthed(!!data?.user))
+      .catch(() => setAuthed(false));
+  }, []);
+
+  if (authed === null) return null;
+  if (!authed) {
+    router.replace("/login");
+    return null;
+  }
 
   const handleStart = () => {
     const dc = localStorage.getItem("xujing_default_character");

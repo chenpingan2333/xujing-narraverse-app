@@ -8,9 +8,9 @@ function buildConfig() {
     return {
       connectionString: databaseUrl,
       ssl: databaseUrl.includes("neon.tech") ? { rejectUnauthorized: false } : false,
-      max: 20,
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 5_000,
+      max: 5,
+      idleTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 10_000,
     };
   }
   return {
@@ -20,9 +20,9 @@ function buildConfig() {
     user: process.env["DB_USER"] ?? "narraverse",
     password: process.env["DB_PASSWORD"] ?? "narraverse",
     ssl: (process.env["DB_HOST"] ?? "").includes("neon.tech") ? { rejectUnauthorized: false } : false,
-    max: 20,
-    idleTimeoutMillis: 30_000,
-    connectionTimeoutMillis: 5_000,
+    max: 5,
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 10_000,
   };
 }
 
