@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Send email via Resend API.
  *
  * Requires RESEND_API_KEY in environment.
@@ -7,7 +7,7 @@
 import { Resend } from "resend";
 
 const RESEND_API_KEY = process.env["RESEND_API_KEY"] ?? "";
-const RESEND_FROM = process.env["RESEND_FROM"] ?? "auth@send.modelbridge.top";
+const RESEND_FROM = process.env["RESEND_FROM"] ?? "auth@modelbridge.top";
 
 let _resend: Resend | null = null;
 
