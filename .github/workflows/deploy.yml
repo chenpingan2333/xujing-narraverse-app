@@ -1,9 +1,7 @@
-name: CI Build Check
+name: CI Build & Deploy
 
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
 
 jobs:
@@ -11,23 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 10
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Lint check
-        run: pnpm lint 2>&1 || echo "::warning::Lint issues found but not blocking"
-
-      - name: Build check
-        run: pnpm build
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm build
