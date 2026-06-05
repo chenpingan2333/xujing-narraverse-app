@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "../../components/navigation/BackButton";
-import BottomNav from "../../components/navigation/BottomNav";
+import AuthenticatedLayout from "@/components/layout/AuthenticatedLayout";
 import { Layout, Card, Typography, Button, Tag, Row, Col, Avatar, Input, message as antMsg } from "antd";
 import { ArrowLeftOutlined, ShoppingCartOutlined, FireOutlined, StarOutlined, CrownOutlined, CheckCircleFilled, VerifiedOutlined } from "@ant-design/icons";
 
@@ -248,7 +248,7 @@ export default function MarketplacePage() {
         </div>
       )}
     </Content>
-      <BottomNav />
+      
     </>
   );
 }

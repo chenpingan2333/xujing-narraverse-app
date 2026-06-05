@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════════
    叙境 Narraverse AI — Warm Emotional Design System
    Palette: Apricot / Cream / Warm Brown
    ═══════════════════════════════════════════ */
@@ -282,3 +282,9 @@ body.keyboard-open .chat-input-area {
 
 /* ─── Page-level scroll control ─── */
 .page-scroll { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+/* ─── Mobile Safe Area ─── */
+.mobile-safe-page {
+  min-height: 100dvh;
+  padding-top: calc(env(safe-area-inset-top) + 12px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+}

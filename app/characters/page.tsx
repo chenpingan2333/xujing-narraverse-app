@@ -6,7 +6,7 @@ import { Layout, Card, Typography, Button, Modal, Input, Select, Tag, Row, Col, 
 import { PlusOutlined, SettingOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import AdInterstitial from "../ui/ad-interstitial";
 import BackButton from "../../components/navigation/BackButton";
-import BottomNav from "../../components/navigation/BottomNav";
+import AuthenticatedLayout from "@/components/layout/AuthenticatedLayout";
 import CreateFab from "../../components/ui/CreateFab";
 
 const { Title, Text, Paragraph } = Typography;
@@ -301,7 +301,7 @@ function CharactersPageInner() {
         {/* FAB — always visible to create character */}
         <CreateFab onClick={() => setCreateOpen(true)} />
       </Content>
-      <BottomNav />
+      
     </>
   );
 }
