@@ -515,9 +515,11 @@ function ChatPageInner() {
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={<p style={{ textAlign: "center", color: "#B08968", padding: 48 }}>她在这里，一直在等你。</p>}>
-      <ChatPageInner />
-    </Suspense>
+    <AuthenticatedLayout>
+      <Suspense fallback={<p style={{ textAlign: "center", color: "#B08968", padding: 48 }}>她在这里，一直在等你。</p>}>
+        <ChatPageInner />
+      </Suspense>
+    </AuthenticatedLayout>
   );
 }
 

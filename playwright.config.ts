@@ -1,26 +1,21 @@
-﻿import { defineConfig, devices } from "@playwright/test";
+﻿import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: "./e2e",
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: [["list"], ["html", { open: "never" }]],
-  timeout: 30_000,
-
+  testDir: './tests/e2e',
+  timeout: 30000,
+  retries: 0,
   use: {
-    baseURL: "http://localhost:3001",
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
+    baseURL: 'http://localhost:3003',
+    trace: 'on-first-retry',
   },
-
   projects: [
     {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      name: 'iPhone 15',
+      use: { ...devices['iPhone 15'], browserName: 'chromium' },
+    },
+    {
+      name: 'Pixel 7',
+      use: { ...devices['Pixel 7'] },
     },
   ],
-
-  webServer: undefined,
 });

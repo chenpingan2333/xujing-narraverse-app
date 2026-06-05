@@ -2,7 +2,6 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import {
-  HomeOutlined,
   UserOutlined,
   MessageOutlined,
   ShopOutlined,
@@ -17,8 +16,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { key: "home", label: "首页", icon: <HomeOutlined />, path: "/" },
-  { key: "characters", label: "角色", icon: <UserOutlined />, path: "/characters" },
+    { key: "characters", label: "角色", icon: <UserOutlined />, path: "/characters" },
   { key: "chat", label: "聊天", icon: <MessageOutlined />, path: "/chat" },
   { key: "marketplace", label: "商店", icon: <ShopOutlined />, path: "/marketplace" },
   { key: "profile", label: "我的", icon: <SmileOutlined />, path: "/profile" },
@@ -27,7 +25,7 @@ const NAV_ITEMS: NavItem[] = [
 /**
  * BottomNav — 叙境移动端底部导航栏
  *
- * 固定在页面底部，5 个主要入口
+ * 固定在页面底部，4 个主要入口
  * 当前活跃项高亮为品牌色
  * 适配 safe-area-inset-bottom
  */
@@ -36,7 +34,6 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   const isActive = (item: NavItem) => {
-    if (item.path === "/") return pathname === "/";
     return pathname.startsWith(item.path);
   };
 
