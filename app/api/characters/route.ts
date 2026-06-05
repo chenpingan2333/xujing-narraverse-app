@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth/session";
 import { query, queryOne } from "@/lib/db/pool";
 import { userQuotaService, FREE_CHARACTER_LIMIT, AD_REWARD_CHARACTER, AdCooldownError } from "@/features/narraverse/user/quota";
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
       tier: string; avatar: string; world_id: string | null;
       is_active: boolean; created_at: string;
     }>(
-      "SELECT id, name, persona, description, tier, avatar, world_id, is_active, created_at FROM characters WHERE user_id = $1 AND is_active = true ORDER BY created_at DESC",
+      "SELECT id, name, display_name, persona, description, display_description, tier, avatar, world_id, is_active, created_at FROM characters WHERE user_id = $1 AND is_active = true ORDER BY created_at DESC",
       [userId]
     );
 
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         var d = defaults[_i];
         var r = await queryOne(
           'INSERT INTO characters (user_id, name, persona, description, tier, avatar) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-          [userId, d.n, d.p, '', 'basic', d.a]
+          [userId, d.n, d.n, d.p, '', '', 'basic', d.a]
         );
         if (r) seeded.push(r);
       }
@@ -97,6 +97,13 @@ export async function POST(req: NextRequest) {
     const background = body.background ?? "";
     const greeting = body.greeting ?? "";
     const taboos = body.taboos ?? "";
+    const openingMessage = body.openingMessage ?? "";
+    const worldView = body.worldView ?? "";
+    const relationshipGuide = body.relationshipGuide ?? "";
+    const storyNodes = body.storyNodes ?? [];
+    const rarity = body.rarity ?? "normal";
+    const priceStar = body.price_star ?? 0;
+    const displayName = body.display_name ?? "";
 
     if (userId) {
       const row = await queryOne<{
@@ -105,7 +112,7 @@ export async function POST(req: NextRequest) {
         is_active: boolean; created_at: string;
       }>(
         "INSERT INTO characters (user_id, name, persona, description, tier, avatar, speech_style, background, greeting, taboos) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
-        [userId, name, persona, description, tier, avatar, speechStyle, background, greeting, taboos]
+        [userId, name, body.display_name || name, persona, description, tier, avatar, speechStyle, background, greeting, body.openingMessage || greeting, body.worldView || '', body.relationshipGuide || '', JSON.stringify(body.storyNodes || []), taboos, body.rarity || 'normal', body.price_star || 0]
       );
 
       await userQuotaService.increment(userId, "character_create");

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -16,8 +16,10 @@ const { TextArea } = Input;
 interface Character {
   id: string;
   name: string;
+  displayName?: string;
   persona: string;
   description: string;
+  displayDescription?: string;
   tier: string;
   worldId: string | null;
   avatar: string;
@@ -171,7 +173,7 @@ function CharactersPageInner() {
                           margin: 0, color: "#5C4033", fontSize: 16, fontWeight: 400,
                           fontFamily: "'Georgia','Noto Serif SC',serif",
                         }}>
-                          {char.name}
+                          {char.displayName || char.name}
                         </Title>
                         <Tag style={{
                           background: TIER_COLORS[char.tier] + "15",
@@ -185,7 +187,7 @@ function CharactersPageInner() {
                         color: "#8b7355", fontSize: 13, margin: 0,
                         lineHeight: 1.6, fontStyle: "italic",
                       }}>
-                        {char.persona.length > 48 ? char.persona.slice(0, 48) + "…" : char.persona}
+                        {(() => { const d = char.displayDescription || char.persona; return d.length > 48 ? d.slice(0, 48) + "…" : d; })()}
                       </Paragraph>
                       {char.relationship && (
                         <div style={{ marginTop: 10 }}>

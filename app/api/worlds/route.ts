@@ -1,20 +1,32 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { query } from "@/lib/db/pool";
 
-interface WorldDisplay {
-  id: string;
-  name: string;
-  tier: string;
-  worldType: string;
-  mode: "simple" | "advanced";
-  description: string;
-}
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
 
-const worlds: WorldDisplay[] = [
-  { id: "world-001", name: "艾尔德兰", worldType: "fantasy", tier: "basic", mode: "simple", description: "经典西方奇幻世界，剑与魔法的冒险" },
-  { id: "world-002", name: "星辰纪元", worldType: "scifi", tier: "premium", mode: "advanced", description: "未来星际文明，人类在银河系中探索未知" },
-  { id: "world-003", name: "江湖风云", worldType: "wuxia", tier: "story", mode: "advanced", description: "武侠世界，恩怨情仇，快意江湖" },
-];
+  try {
+    if (id) {
+      const world = await query(
+        "SELECT * FROM official_worlds WHERE id = $1",
+        [id]
+      );
+      if (world.length === 0) return NextResponse.json({ error: "不存在" }, { status: 404 });
 
-export async function GET() {
-  return NextResponse.json(worlds);
+      // Get characters bound to this world
+      const chars = await query(
+        "SELECT id, name, display_name, persona, avatar, rarity FROM characters WHERE world_id = $1 AND is_active = true",
+        [id]
+      );
+      return NextResponse.json({ world: world[0], characters: chars });
+    }
+
+    const rows = await query(
+      "SELECT id, name, display_name, description, world_type, cover_image, is_official, created_at FROM official_worlds ORDER BY created_at DESC LIMIT 50"
+    );
+    return NextResponse.json({ worlds: rows });
+  } catch (e) {
+    console.error("Worlds list error:", e);
+    return NextResponse.json({ worlds: [] });
+  }
 }

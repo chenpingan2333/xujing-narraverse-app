@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "antd";
+import { UserAddOutlined, GlobalOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import BottomNav from "../components/navigation/BottomNav";
 
 export default function HomePage() {
@@ -17,6 +18,14 @@ export default function HomePage() {
   const handleStart = () => {
     const dc = localStorage.getItem("xujing_default_character");
     router.push(dc ? `/chat?characterId=${dc}` : "/characters");
+  };
+
+  const btnBase = {
+    height: 48, paddingLeft: 32, paddingRight: 32,
+    fontSize: 15, fontWeight: 400,
+    fontFamily: "'Georgia', 'Noto Serif SC', serif",
+    borderRadius: 24, letterSpacing: 3,
+    transition: "all 0.4s ease",
   };
 
   return (
@@ -52,7 +61,6 @@ export default function HomePage() {
         opacity: ready ? 1 : 0,
         transition: "opacity 1.2s ease",
       }}>
-        {/* Title */}
         <h1 style={{
           fontFamily: "'Georgia', 'Noto Serif SC', 'Songti SC', serif",
           fontSize: 64, fontWeight: 400, color: "#5C4033",
@@ -81,35 +89,49 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* CTA */}
+      {/* Action buttons */}
       <div style={{
-        marginTop: 48, zIndex: 1,
+        marginTop: 48, zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
         opacity: ready ? 1 : 0,
         transform: ready ? "translateY(0)" : "translateY(16px)",
         transition: "all 0.7s ease 0.4s",
       }}>
+        {/* 创建角色 */}
         <Button
-          onClick={handleStart}
+          icon={<UserAddOutlined />}
+          onClick={() => router.push("/characters/create")}
           style={{
-            height: 54, paddingLeft: 48, paddingRight: 48,
-            fontSize: 18, fontWeight: 400,
-            fontFamily: "'Georgia', 'Noto Serif SC', serif",
-            borderRadius: 27,
+            ...btnBase, width: 240,
             background: "linear-gradient(135deg, #f6c177 0%, #f0a860 100%)",
-            border: "none",
-            color: "#fffdf9",
+            border: "none", color: "#fffdf9",
             boxShadow: "0 4px 20px rgba(240,168,96,0.30)",
-            letterSpacing: 4,
-            transition: "all 0.4s ease",
           }}
           className="xj-glow"
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.transform = "scale(1.03)";
-            (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 28px rgba(240,168,96,0.40)";
+        >
+          创建角色
+        </Button>
+
+        {/* 创建世界包 */}
+        <Button
+          icon={<GlobalOutlined />}
+          onClick={() => router.push("/worlds/create")}
+          style={{
+            ...btnBase, width: 240,
+            background: "transparent",
+            border: "1.5px solid #ead9c0", color: "#B08968",
           }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-            (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(240,168,96,0.30)";
+        >
+          创建世界包
+        </Button>
+
+        {/* 开始叙境 */}
+        <Button
+          icon={<PlayCircleOutlined />}
+          onClick={handleStart}
+          style={{
+            ...btnBase, width: 240, marginTop: 8,
+            background: "#fdf8f0",
+            border: "1.5px solid #ead9c0", color: "#8b7355",
           }}
         >
           开始叙境
